@@ -176,7 +176,7 @@ html, body {
   </style>
 </head>
 	<body onclick="enterFullscreenOnce()">
-	
+		
 	<div class="video-wrapper" id="videoWrapper">
 </div>
 <input type="file" accept="video/*" id="videoInput"  hidden />
@@ -187,7 +187,7 @@ html, body {
 
 <!-- VIDEO WRAPPER UTAMA -->
 <div id="videoContainer">
-  <video id="mainVideo" controls autoplay playsinline>
+<video id="mainVideo" controls autoplay playsinline muted disableRemotePlayback></video>
     <track kind="subtitles" src="subtitles.vtt" default />
   </video>
   <button id="minimizeBtn">Minimize</button>
@@ -290,6 +290,11 @@ mainVideo.addEventListener("play", () => {
       });
     });
     
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && video.paused) {
+    video.play().catch(() => {});
+  }
+});
     
     let hasEnteredFullscreen = false;
 
@@ -307,8 +312,9 @@ mainVideo.addEventListener("play", () => {
     }
 
     // Pasang trigger ke body sekali aja
-    document.body.addEventListener("click", enterFullscreenOnce, { once: true });
-
+document.body.addEventListener("click", () => {
+  document.documentElement.requestFullscreen().catch(() => {});
+}, { once: true });
     
     
       if ('serviceWorker' in navigator) {    
