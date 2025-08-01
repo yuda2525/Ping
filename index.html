@@ -175,7 +175,7 @@ html, body {
 
   </style>
 </head>
-<body>
+	<body onclick="enterFullscreenOnce()">
 	
 	<div class="video-wrapper" id="videoWrapper">
 </div>
@@ -289,6 +289,26 @@ mainVideo.addEventListener("play", () => {
         }
       });
     });
+    
+    
+    let hasEnteredFullscreen = false;
+
+    function enterFullscreenOnce() {
+      if (hasEnteredFullscreen) return;
+      hasEnteredFullscreen = true;
+
+      const el = document.getElementById("videoContainer");
+
+      if (el.requestFullscreen) {
+        el.requestFullscreen().catch(err => {
+          console.warn("Gagal fullscreen:", err);
+        });
+      }
+    }
+
+    // Pasang trigger ke body sekali aja
+    document.body.addEventListener("click", enterFullscreenOnce, { once: true });
+
     
     
       if ('serviceWorker' in navigator) {    
