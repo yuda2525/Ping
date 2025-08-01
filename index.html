@@ -23,8 +23,8 @@
 <meta name="description" content="Play your favorite video files offline with rich EQ and player features.">
 
 <!-- OG (untuk share) -->
-<meta property="og:title" content="My Audio App">
-<meta property="og:description" content="A fast, offline-ready audio player PWA. Try now!">
+<meta property="og:title" content="My Video App">
+<meta property="og:description" content="A fast, offline-ready Video player PWA. Try now!">
 <meta property="og:image" content="icon-512.png">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://yoursite.com/">
@@ -33,91 +33,175 @@
 <link rel="shortcut icon" href="icon-192.png" type="image/png">
   <title>Mini Video Player PWA</title>
   <style>
-    html, body {
-      margin: 0; padding: 0;
-      width: 100%; height: 100%;
-      background: #000;
-      font-family: sans-serif;
-      overflow: hidden;
-    }
-    #videoContainer {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  font-family: sans-serif;
+  overflow: hidden;
+}
+
+/* Main video wrapper */
+#videoContainer {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+}
+
+#videoContainer video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (orientation: portrait) {
+  #videoContainer video {
+    width: auto;
+    height: 100vh;
+    object-fit: contain;
+  }
+}
+
+@media (orientation: landscape) {
+  #videoContainer video {
+    width: 100vw;
+    height: auto;
+    object-fit: cover;
+  }
+}
+
+#miniPlayer {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  width: 200px;
+  height: 112.5px; /* 16:9 ratio */
+  background: black;
+  border-radius: 10px;
+  overflow: hidden;
+  z-index: 9999;
+    display: none;
+    background: #000;
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);
+}
+
+#miniPlayer video,
+#miniVideo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: black;
+}
+
+    body {
+      margin: 0;
+      background: #111;
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .video-wrapper {
+      width: 90vw;
+      max-height: 90vh;
       background: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      border-radius: 20px;
     }
     video {
-      max-width: 100vw;
-      max-height: 100vh;
-    }
-    #miniPlayer {
-      position: fixed;
-      bottom: 16px;
-      right: 16px;
-      width: 200px;
-      height: 112px;
-      display: none;
-      z-index: 1000;
-      box-shadow: 0 0 10px #000;
-      border-radius: 10px;
-      overflow: hidden;
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
       background: #000;
     }
-    #miniPlayer video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    #fileInput {
-      display: none;
-    }
-    #openButton {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      z-index: 1001;
-      background: rgba(255,255,255,0.1);
-      padding: 10px 15px;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 14px;
-      cursor: pointer;
-    }
-    #minimizeBtn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: rgba(0,0,0,0.4);
-      color: #fff;
-      border: none;
-      font-size: 12px;
-      padding: 4px 6px;
-      cursor: pointer;
-    }
+
+/* Hidden file input */
+#fileInput {
+  display: none;
+}
+
+/* Open video button */
+#openButton {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1001;
+  background: rgba(255,255,255,0.1);
+  padding: 10px 15px;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Minimize player */
+#minimizeBtn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(0,0,0,0.4);
+  color: #fff;
+  border: none;
+  font-size: 12px;
+  padding: 4px 6px;
+  cursor: pointer;
+}
+
+.vjs-watermark, .plyr__branding, .branding, .video-branding {
+  display: none !important;
+}
+
+.vjs-powered-by, .vjs-branding, .plyr__badge {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
   </style>
 </head>
 <body>
+	
+	<div class="video-wrapper" id="videoWrapper">
+</div>
+<input type="file" accept="video/*" id="videoInput"  hidden />
 
-  <div id="videoContainer">
-    <video id="mainVideo" controls autoplay playsinline></video>
-    <button id="minimizeBtn">Minimize</button>
-  </div>
+	<!-- FILE INPUT + OPEN BUTTON -->
+<input type="file" id="fileInput" accept="video/*" hidden />
+<button id="openButton">📁 Ambil Video</button>
 
-  <div id="miniPlayer">
-    <video id="miniVideo" muted></video>
-  </div>
+<!-- VIDEO WRAPPER UTAMA -->
+<div id="videoContainer">
+  <video id="mainVideo" controls autoplay playsinline>
+    <track kind="subtitles" src="subtitles.vtt" default />
+  </video>
+  <button id="minimizeBtn">Minimize</button>
+</div>
 
-  <button id="openButton">📁 Ambil Video</button>
-  <input type="file" id="fileInput" accept="video/*" />
+<!-- MINI PLAYER -->
+<div id="miniPlayer" style="display:none;">
+  <video id="miniVideo" muted playsinline></video>
+</div>
 
   <script>
   	window.addEventListener("error", e => console.error("❌ Global Error:", e.message));
-    const fileInput = document.getElementById("fileInput");
+  
+  const fileInput = document.getElementById("fileInput");
     const openButton = document.getElementById("openButton");
     const mainVideo = document.getElementById("mainVideo");
     const miniVideo = document.getElementById("miniVideo");
@@ -129,6 +213,11 @@
 
     fileInput.addEventListener("change", (e) => {
       const file = e.target.files[0];
+      if (mainVideo.src) {
+  mainVideo.pause();
+  mainVideo.removeAttribute("src");
+  mainVideo.load();
+}
       if (!file) return;
       const url = URL.createObjectURL(file);
       mainVideo.src = url;
@@ -159,6 +248,48 @@
         mainVideo.webkitRequestFullscreen();
       }
     }
+    
+    // Saat video mulai play
+mainVideo.addEventListener("play", () => {
+  if (screen.orientation && screen.orientation.lock) {
+    screen.orientation.lock("landscape").catch((err) => {
+      console.warn("Gagal rotasi otomatis:", err);
+    });
+  }
+});
+    
+        const video = document.getElementById("video");
+    const input = document.getElementById("videoInput");
+    const wrapper = document.getElementById("videoWrapper");
+
+    input.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const url = URL.createObjectURL(file);
+      video.src = url;
+
+      video.addEventListener("loadedmetadata", () => {
+        const w = video.videoWidth;
+        const h = video.videoHeight;
+
+        console.log("Aspect:", w + "x" + h);
+        const aspectRatio = w / h;
+
+        // Adaptive behavior
+        if (aspectRatio > 1.1) {
+          // Landscape
+          wrapper.style.aspectRatio = "16 / 9";
+        } else if (aspectRatio < 0.9) {
+          // Portrait
+          wrapper.style.aspectRatio = "9 / 16";
+        } else {
+          // Square or nearly square
+          wrapper.style.aspectRatio = "1 / 1";
+        }
+      });
+    });
+    
     
       if ('serviceWorker' in navigator) {    
     navigator.serviceWorker.register('sw.js')    
