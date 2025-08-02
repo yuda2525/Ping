@@ -71,6 +71,7 @@ html, body {
     width: auto;    
     height: 100vh;    
     object-fit: contain;    
+        object-fit: contain !important;
   }    
 }    
     
@@ -130,8 +131,10 @@ html, body {
       justify-content: center;    
       align-items: center;    
       overflow: hidden;    
-      border-radius: 20px;    
-    }    
+  cursor: move;
+  z-index: 9999;
+  display: none; /* default disembunyikan, muncul saat minimize */
+}
     video {    
       max-width: 100%;    
       max-height: 100%;    
@@ -230,13 +233,8 @@ html, body {
 <!-- VIDEO WRAPPER (BISA DIPAKAI UNTUK MODE NORMAL & MINI) -->    
 <div id="videoContainer">    
   <video id="mainVideo" controls autoplay playsinline></video>    
-  <button id="minimizeBtn">Minimize</button>    
 </div>    
     
-<div id="miniPlayer" style="display:none;">    
-  <video id="miniVideo" muted playsinline></video>    
-</div>    
-      
   <script>      
   	window.addEventListener("error", e => console.error("❌ Global Error:", e.message));      
         
@@ -245,9 +243,7 @@ html, body {
     const mainVideo = document.getElementById("mainVideo");      
     const miniVideo = document.getElementById("miniVideo");      
     const videoContainer = document.getElementById("videoContainer");      
-    const miniPlayer = document.getElementById("miniPlayer");      
-    const minimizeBtn = document.getElementById("minimizeBtn");      
-      
+
     openButton.onclick = () => fileInput.click();      
       
     fileInput.addEventListener("change", (e) => {      
@@ -264,18 +260,6 @@ html, body {
       mainVideo.play();      
       requestFullscreenLandscape();      
     });      
-      
-    minimizeBtn.onclick = () => {      
-      videoContainer.style.display = "none";      
-      miniPlayer.style.display = "block";      
-      miniVideo.play();      
-    };      
-      
-    miniPlayer.onclick = () => {      
-      miniPlayer.style.display = "none";      
-      videoContainer.style.display = "flex";      
-      mainVideo.play();      
-    };      
       
     function requestFullscreenLandscape() {      
       if (screen.orientation && screen.orientation.lock) {      
@@ -296,8 +280,7 @@ mainVideo.addEventListener("play", () => {
     });      
   }      
 });      
-          
-    
+         
 
 const video = document.getElementById("video");      
 const input = document.getElementById("videoInput");      
@@ -328,29 +311,17 @@ input.addEventListener("change", (e) => {
 });      
     
 let lastPlaybackTime = 0;    
-    
-// Simpan waktu saat minimize    
-document.addEventListener("visibilitychange", () => {    
-  if (document.visibilityState === "hidden") {    
-    lastPlaybackTime = video.currentTime;    
-  } else if (document.visibilityState === "visible") {    
-    // Sync waktu saat balik    
-    video.currentTime = lastPlaybackTime;    
-    video.play().catch(() => {});    
-  }    
-});    
-    
-window.addEventListener("orientationchange", () => {    
-  const wrapper = document.getElementById("videoWrapper");    
-  if (window.innerHeight > window.innerWidth) {    
-    wrapper.style.aspectRatio = "9 / 16";    
-  } else {    
-    wrapper.style.aspectRatio = "16 / 9";    
-  }    
-});    
 
+    
+window.addEventListener("orientationchange", () => {
+  const wrapper = document.getElementById("videoWrapper");
+  if (window.innerHeight > window.innerWidth) {
+    wrapper.style.aspectRatio = "9 / 16";
+  } else {
+    wrapper.style.aspectRatio = "16 / 9";
+  }
+});
 
-// ========== Real-time aspect ratio ==========  
 const observer = new ResizeObserver(() => {
   const w = mainVideo.clientWidth;
   const h = mainVideo.clientHeight;
@@ -380,13 +351,33 @@ window.addEventListener("click", () => {
 });    
     
 // ========== Auto Resume after Minimize/Restore ==========    
-document.addEventListener("visibilitychange", () => {    
-  if (document.visibilityState === "visible" && video.paused) {    
-    setTimeout(() => {    
-      video.play().catch(() => {});    
-    }, 100);    
-  }    
-});    
+document.addEventListener("visibilitychange", () => {
+  const videoContainer = document.getElementById("videoContainer");
+  const miniPlayer = document.getElementById("miniPlayer");
+  const mainVideo = document.getElementById("mainVideo");
+  const miniVideo = document.getElementById("miniVideo");
+
+  if (!videoContainer || !miniPlayer || !mainVideo || !miniVideo) return;
+
+  if (document.visibilityState === "hidden") {
+    videoContainer.style.display = "none";
+    miniPlayer.style.display = "block";
+    miniVideo.currentTime = mainVideo.currentTime || 0;
+    miniVideo.play().catch(() => {});
+  } else if (document.visibilityState === "visible") {
+    miniVideo.pause();
+    miniPlayer.style.display = "none";
+    videoContainer.style.display = "flex";
+    mainVideo.currentTime = miniVideo.currentTime || 0;
+    mainVideo.play().catch(() => {});
+
+    if (mainVideo.paused) {
+      setTimeout(() => {
+        mainVideo.play().catch(() => {});
+      }, 100);
+    }
+  }
+});
 
 
 let isDragging = false, offsetX = 0, offsetY = 0;
@@ -421,6 +412,18 @@ window.addEventListener("scroll", () => {
     wrapper.style.bottom = "auto";
   }
 });
+
+function applyPortraitMode() {
+  if (window.matchMedia("(orientation: portrait)").matches) {
+    mainVideo.classList.add("portraitVideo");
+  } else {
+    mainVideo.classList.remove("portraitVideo");
+  }
+}
+
+window.addEventListener("resize", applyPortraitMode);
+window.addEventListener("orientationchange", applyPortraitMode);
+applyPortraitMode(); // Jalankan sekali di awal
 
       
 function lockVolumeTo200() {
