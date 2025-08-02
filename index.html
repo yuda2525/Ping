@@ -265,11 +265,25 @@ html, body {
   <script>      
   	window.addEventListener("error", e => console.error("❌ Global Error:", e.message));      
         
-  const fileInput = document.getElementById("fileInput");      
-    const openButton = document.getElementById("openButton");      
-    const mainVideo = document.getElementById("mainVideo");      
-    const miniVideo = document.getElementById("miniVideo");      
-    const videoContainer = document.getElementById("videoContainer");      
+const fileInput = document.getElementById("fileInput");
+const openButton = document.getElementById("openButton");
+const mainVideo = document.getElementById("mainVideo");
+const videoContainer = document.getElementById("videoContainer");
+
+fileInput.addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const url = URL.createObjectURL(file);
+
+  mainVideo.src = url;
+  mainVideo.autoplay = true;
+  mainVideo.controls = true;
+  mainVideo.playsInline = true;
+
+  // optional: mute kalau audio mau diolah terpisah
+  // mainVideo.muted = true;
+});
 
     openButton.onclick = () => fileInput.click();      
       
