@@ -421,9 +421,48 @@ function applyPortraitMode() {
   }
 }
 
-window.addEventListener("resize", applyPortraitMode);
-window.addEventListener("orientationchange", applyPortraitMode);
-applyPortraitMode(); // Jalankan sekali di awal
+
+
+const ctx = new (window.AudioContext || window.webkitAudioContext)();
+let sourceNode = null;
+
+document.getElementById("fileInput").addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  // Buat video baru tiap kali pilih file
+  const url = URL.createObjectURL(file);
+  const container = document.getElementById("videoContainer");
+  container.innerHTML = ""; // clear video lama
+
+  const video = document.createElement("video");
+  video.id = "mainVideo";
+  video.controls = true;
+  video.autoplay = true;
+  video.src = url;
+  video.playsInline = true;
+  container.appendChild(video);
+
+  // buat source baru tiap video baru
+  sourceNode = ctx.createMediaElementSource(video);
+
+  const gainNode = ctx.createGain();
+  gainNode.gain.value = 2; // contoh, 200% volume
+
+  const filter = ctx.createBiquadFilter();
+  filter.type = "lowpass";
+  filter.frequency.setValueAtTime(20000, ctx.currentTime); // default pass semua
+
+  sourceNode.connect(filter);
+  filter.connect(gainNode);
+  gainNode.connect(ctx.destination);
+
+  video.addEventListener("play", () => {
+    if (ctx.state === "suspended") ctx.resume();
+  });
+});
+
+
 
       
 function lockVolumeTo200() {
