@@ -196,6 +196,22 @@ html, body {
   opacity: 0 !important;    
   visibility: hidden !important;    
 }    
+
+#floatingVideoWrapper {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 200px;
+  z-index: 9999;
+  background: #000;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: move;
+}
+#floatingVideoWrapper video {
+  width: 100%;
+  display: block;
+}
     
   </style>    
 </head>      
@@ -371,6 +387,41 @@ document.addEventListener("visibilitychange", () => {
     }, 100);    
   }    
 });    
+
+
+let isDragging = false, offsetX = 0, offsetY = 0;
+
+wrapper.addEventListener("mousedown", (e) => {
+  isDragging = true;
+  offsetX = e.clientX - wrapper.offsetLeft;
+  offsetY = e.clientY - wrapper.offsetTop;
+});
+
+document.addEventListener("mousemove", (e) => {
+  if (!isDragging) return;
+  wrapper.style.left = `${e.clientX - offsetX}px`;
+  wrapper.style.top = `${e.clientY - offsetY}px`;
+  wrapper.style.right = "auto";
+  wrapper.style.bottom = "auto";
+});
+
+document.addEventListener("mouseup", () => {
+  isDragging = false;
+});
+
+window.addEventListener("scroll", () => {
+  if (window.scrollY > 150) {
+    wrapper.style.width = "180px";
+    wrapper.style.bottom = "20px";
+    wrapper.style.right = "20px";
+  } else {
+    wrapper.style.width = "100%";
+    wrapper.style.position = "relative";
+    wrapper.style.right = "auto";
+    wrapper.style.bottom = "auto";
+  }
+});
+
       
 function lockVolumeTo200() {
   if (!mainVideo) return;
