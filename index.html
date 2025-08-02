@@ -287,116 +287,74 @@ const input = document.getElementById("videoInput");
 const wrapper = document.getElementById("videoWrapper");    
 let hasEnteredFullscreen = false;    
     
-      
-// ========== Adaptive Aspect Ratio ==========      
-input.addEventListener("change", (e) => {      
-  const file = e.target.files[0];      
-  if (!file) return;      
-      
-  const url = URL.createObjectURL(file);      
-  video.src = url;      
-      
-  video.addEventListener("loadedmetadata", () => {      
-    const w = video.videoWidth;      
-    const h = video.videoHeight;      
-    const aspectRatio = w / h;      
-      
-    if (aspectRatio > 1.1) {      
-      wrapper.style.aspectRatio = "16 / 9";      
-    } else if (aspectRatio < 0.9) {      
-      wrapper.style.aspectRatio = "9 / 16";      
-    } else {      
-      wrapper.style.aspectRatio = "1 / 1";      
-    }      
-  });      
-});      
+// ========== Adaptive Aspect Ratio ==========    
+input.addEventListener("change", (e) => {    
+  const file = e.target.files[0];    
+  if (!file) return;    
     
-let lastPlaybackTime = 0;    
+  const url = URL.createObjectURL(file);    
+  video.src = url;    
     
-// Simpan waktu saat minimize    
+  video.addEventListener("loadedmetadata", () => {    
+    const w = video.videoWidth;    
+    const h = video.videoHeight;    
+    const aspectRatio = w / h;    
+    
+    if (aspectRatio > 1.1) {    
+      wrapper.style.aspectRatio = "16 / 9";    
+    } else if (aspectRatio < 0.9) {    
+      wrapper.style.aspectRatio = "9 / 16";    
+    } else {    
+      wrapper.style.aspectRatio = "1 / 1";    
+    }    
+  });    
+});    
+    
+// ========== Auto Play on Tap + Fullscreen Once ==========    
+window.addEventListener("click", () => {    
+  if (!hasEnteredFullscreen) {    
+    const el = document.getElementById("videoContainer");    
+    if (el?.requestFullscreen) {    
+      el.requestFullscreen().catch((err) => console.warn("Fullscreen gagal:", err));    
+    }    
+    hasEnteredFullscreen = true;    
+  }    
+  video.play().catch(() => {});    
+});    
+    
+// ========== Auto Resume after Minimize/Restore ==========    
 document.addEventListener("visibilitychange", () => {    
-  if (document.visibilityState === "hidden") {    
-    lastPlaybackTime = video.currentTime;    
-  } else if (document.visibilityState === "visible") {    
-    // Sync waktu saat balik    
-    video.currentTime = lastPlaybackTime;    
-    video.play().catch(() => {});    
-  }    
-});    
-    
-window.addEventListener("orientationchange", () => {    
-  const wrapper = document.getElementById("videoWrapper");    
-  if (window.innerHeight > window.innerWidth) {    
-    wrapper.style.aspectRatio = "9 / 16";    
-  } else {    
-    wrapper.style.aspectRatio = "16 / 9";    
+  if (document.visibilityState === "visible" && video.paused) {    
+    setTimeout(() => {    
+      video.play().catch(() => {});    
+    }, 100);    
   }    
 });    
       
-  // ========== Real-time aspect ratio ==========      
-const observer = new ResizeObserver(() => {    
-  const w = video.clientWidth;    
-  const h = video.clientHeight;    
-  const aspectRatio = w / h;    
-    
-  if (aspectRatio > 1.1) {    
-    wrapper.style.aspectRatio = "16 / 9";    
-  } else if (aspectRatio < 0.9) {    
-    wrapper.style.aspectRatio = "9 / 16";    
-  } else {    
-    wrapper.style.aspectRatio = "1 / 1";    
-  }    
-});    
-    
-observer.observe(wrapper);    
-      
-// ========== Auto Play on Tap + Fullscreen Once ==========      
-window.addEventListener("click", () => {      
-  if (!hasEnteredFullscreen) {      
-    const el = document.getElementById("videoContainer");      
-    if (el?.requestFullscreen) {      
-      el.requestFullscreen().catch((err) => console.warn("Fullscreen gagal:", err));      
-    }      
-    hasEnteredFullscreen = true;      
-  }      
-  video.play().catch(() => {});      
-});      
-      
-// ========== Auto Resume after Minimize/Restore ==========      
-document.addEventListener("visibilitychange", () => {      
-  if (document.visibilityState === "visible" && video.paused) {      
-    setTimeout(() => {      
-      video.play().catch(() => {});      
-    }, 100);      
-  }      
-});      
-      
-  function lockVolumeTo200() {      
-    if (!video) return;      
-      
-    // Atur volume ke 2.0 jika bisa (meskipun sebagian browser limit ke 1.0)      
-    video.volume = 1.0; // batas maksimal volume native HTML5      
-    try {      
-      const context = new AudioContext();      
-      const source = context.createMediaElementSource(video);      
-      const gainNode = context.createGain();      
-      
-      gainNode.gain.value = 2.0; // 200%      
-      source.connect(gainNode).connect(context.destination);      
-      
-      console.log("🔊 Volume locked at 200%");      
-    } catch (e) {      
-      console.warn("🔇 Gagal tingkatkan volume:", e);      
-    }      
-      
-    // Lock volume (jika user mencoba ubah dari UI/keyboard)      
-    const lock = () => {      
-      if (video.volume !== 1.0) video.volume = 1.0;      
-    };      
-    video.addEventListener("volumechange", lock);      
-  }      
-      
-  document.addEventListener("DOMContentLoaded", lockVolumeTo200);      
+function lockVolumeTo200() {
+  if (!mainVideo) return;
+
+  mainVideo.volume = 1.0;
+  try {
+    const context = new AudioContext();
+    const source = context.createMediaElementSource(mainVideo);
+    const gainNode = context.createGain();
+
+    gainNode.gain.value = 2.0; // 200%
+    source.connect(gainNode).connect(context.destination);
+
+    console.log("🔊 Volume locked at 200%");
+  } catch (e) {
+    console.warn("🔇 Gagal tingkatkan volume:", e);
+  }
+
+  const lock = () => {
+    if (mainVideo.volume !== 1.0) mainVideo.volume = 1.0;
+  };
+  mainVideo.addEventListener("volumechange", lock);
+}
+
+document.addEventListener("DOMContentLoaded", lockVolumeTo200);
     
     
       if ('serviceWorker' in navigator) {        
