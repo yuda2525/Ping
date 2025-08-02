@@ -174,149 +174,142 @@ html, body {
 }
 
   </style>
-</head>
-	<body onclick="enterFullscreenOnce()">
+</head>  
+	<body onclick="enterFullscreenOnce()">  
 		
-	<div class="video-wrapper" id="videoWrapper">
-</div>
+		<div class="video-wrapper" id="videoWrapper">  
+</div>  
 <input type="file" accept="video/*" id="videoInput"  hidden />
-
-	<!-- FILE INPUT + OPEN BUTTON -->
+  
+	 
+<!-- FILE INPUT + OPEN BUTTON -->
 <input type="file" id="fileInput" accept="video/*" hidden />
 <button id="openButton">📁 Ambil Video</button>
 
-<!-- VIDEO WRAPPER UTAMA -->
+<!-- VIDEO WRAPPER (BISA DIPAKAI UNTUK MODE NORMAL & MINI) -->
 <div id="videoContainer">
-<video id="mainVideo" controls autoplay playsinline muted disableRemotePlayback></video>
-    <track kind="subtitles" src="subtitles.vtt" default />
-  </video>
+  <video id="mainVideo" controls autoplay playsinline></video>
   <button id="minimizeBtn">Minimize</button>
 </div>
 
-<!-- MINI PLAYER -->
 <div id="miniPlayer" style="display:none;">
   <video id="miniVideo" muted playsinline></video>
 </div>
-
-  <script>
-  	window.addEventListener("error", e => console.error("❌ Global Error:", e.message));
   
-  const fileInput = document.getElementById("fileInput");
-    const openButton = document.getElementById("openButton");
-    const mainVideo = document.getElementById("mainVideo");
-    const miniVideo = document.getElementById("miniVideo");
-    const videoContainer = document.getElementById("videoContainer");
-    const miniPlayer = document.getElementById("miniPlayer");
-    const minimizeBtn = document.getElementById("minimizeBtn");
-
-    openButton.onclick = () => fileInput.click();
-
-    fileInput.addEventListener("change", (e) => {
-      const file = e.target.files[0];
-      if (mainVideo.src) {
-  mainVideo.pause();
-  mainVideo.removeAttribute("src");
-  mainVideo.load();
-}
-      if (!file) return;
-      const url = URL.createObjectURL(file);
-      mainVideo.src = url;
-      miniVideo.src = url;
-      mainVideo.play();
-      requestFullscreenLandscape();
+  <script>  
+  	window.addEventListener("error", e => console.error("❌ Global Error:", e.message));  
+    
+  const fileInput = document.getElementById("fileInput");  
+    const openButton = document.getElementById("openButton");  
+    const mainVideo = document.getElementById("mainVideo");  
+    const miniVideo = document.getElementById("miniVideo");  
+    const videoContainer = document.getElementById("videoContainer");  
+    const miniPlayer = document.getElementById("miniPlayer");  
+    const minimizeBtn = document.getElementById("minimizeBtn");  
+  
+    openButton.onclick = () => fileInput.click();  
+  
+    fileInput.addEventListener("change", (e) => {  
+      const file = e.target.files[0];  
+      if (mainVideo.src) {  
+  mainVideo.pause();  
+  mainVideo.removeAttribute("src");  
+  mainVideo.load();  
+}  
+      if (!file) return;  
+      const url = URL.createObjectURL(file);  
+      mainVideo.src = url;  
+      miniVideo.src = url;  
+      mainVideo.play();  
+      requestFullscreenLandscape();  
+    });  
+  
+    minimizeBtn.onclick = () => {  
+      videoContainer.style.display = "none";  
+      miniPlayer.style.display = "block";  
+      miniVideo.play();  
+    };  
+  
+    miniPlayer.onclick = () => {  
+      miniPlayer.style.display = "none";  
+      videoContainer.style.display = "flex";  
+      mainVideo.play();  
+    };  
+  
+    function requestFullscreenLandscape() {  
+      if (screen.orientation && screen.orientation.lock) {  
+        screen.orientation.lock("landscape").catch(() => {});  
+      }  
+      if (mainVideo.requestFullscreen) {  
+        mainVideo.requestFullscreen().catch(() => {});  
+      } else if (mainVideo.webkitRequestFullscreen) {  
+        mainVideo.webkitRequestFullscreen();  
+      }  
+    }  
+      
+    // Saat video mulai play  
+mainVideo.addEventListener("play", () => {  
+  if (screen.orientation && screen.orientation.lock) {  
+    screen.orientation.lock("landscape").catch((err) => {  
+      console.warn("Gagal rotasi otomatis:", err);  
+    });  
+  }  
+});  
+      
+        const video = document.getElementById("video");  
+    const input = document.getElementById("videoInput");  
+    const wrapper = document.getElementById("videoWrapper");  
+  
+    input.addEventListener("change", (e) => {  
+      const file = e.target.files[0];  
+      if (!file) return;  
+  
+      const url = URL.createObjectURL(file);  
+      video.src = url;  
+  
+      video.addEventListener("loadedmetadata", () => {  
+        const w = video.videoWidth;  
+        const h = video.videoHeight;  
+  
+        console.log("Aspect:", w + "x" + h);  
+        const aspectRatio = w / h;  
+  
+        // Adaptive behavior  
+        if (aspectRatio > 1.1) {  
+          // Landscape  
+          wrapper.style.aspectRatio = "16 / 9";  
+        } else if (aspectRatio < 0.9) {  
+          // Portrait  
+          wrapper.style.aspectRatio = "9 / 16";  
+        } else {  
+          // Square or nearly square  
+          wrapper.style.aspectRatio = "1 / 1";  
+        }  
+      });  
     });
+      
+document.addEventListener("visibilitychange", () => {  
+  if (document.visibilityState === "visible" && video.paused) {  
+    video.play().catch(() => {});  
+  }  
+});  
+      
+    let hasEnteredFullscreen = false;  
+  
+    function enterFullscreenOnce() {  
+      if (hasEnteredFullscreen) return;  
+      hasEnteredFullscreen = true;  
+  
+      const el = document.getElementById("videoContainer");  
+  
+      if (el.requestFullscreen) {  
+        el.requestFullscreen().catch(err => {  
+          console.warn("Gagal fullscreen:", err);  
+        });  
+      }  
+    }  
+  
 
-    minimizeBtn.onclick = () => {
-      videoContainer.style.display = "none";
-      miniPlayer.style.display = "block";
-      miniVideo.play();
-    };
-
-    miniPlayer.onclick = () => {
-      miniPlayer.style.display = "none";
-      videoContainer.style.display = "flex";
-      mainVideo.play();
-    };
-
-    function requestFullscreenLandscape() {
-      if (screen.orientation && screen.orientation.lock) {
-        screen.orientation.lock("landscape").catch(() => {});
-      }
-      if (mainVideo.requestFullscreen) {
-        mainVideo.requestFullscreen().catch(() => {});
-      } else if (mainVideo.webkitRequestFullscreen) {
-        mainVideo.webkitRequestFullscreen();
-      }
-    }
-    
-    // Saat video mulai play
-mainVideo.addEventListener("play", () => {
-  if (screen.orientation && screen.orientation.lock) {
-    screen.orientation.lock("landscape").catch((err) => {
-      console.warn("Gagal rotasi otomatis:", err);
-    });
-  }
-});
-    
-        const video = document.getElementById("video");
-    const input = document.getElementById("videoInput");
-    const wrapper = document.getElementById("videoWrapper");
-
-    input.addEventListener("change", (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      const url = URL.createObjectURL(file);
-      video.src = url;
-
-      video.addEventListener("loadedmetadata", () => {
-        const w = video.videoWidth;
-        const h = video.videoHeight;
-
-        console.log("Aspect:", w + "x" + h);
-        const aspectRatio = w / h;
-
-        // Adaptive behavior
-        if (aspectRatio > 1.1) {
-          // Landscape
-          wrapper.style.aspectRatio = "16 / 9";
-        } else if (aspectRatio < 0.9) {
-          // Portrait
-          wrapper.style.aspectRatio = "9 / 16";
-        } else {
-          // Square or nearly square
-          wrapper.style.aspectRatio = "1 / 1";
-        }
-      });
-    });
-    
-document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "visible" && video.paused) {
-    video.play().catch(() => {});
-  }
-});
-    
-    let hasEnteredFullscreen = false;
-
-    function enterFullscreenOnce() {
-      if (hasEnteredFullscreen) return;
-      hasEnteredFullscreen = true;
-
-      const el = document.getElementById("videoContainer");
-
-      if (el.requestFullscreen) {
-        el.requestFullscreen().catch(err => {
-          console.warn("Gagal fullscreen:", err);
-        });
-      }
-    }
-
-    // Pasang trigger ke body sekali aja
-document.body.addEventListener("click", () => {
-  document.documentElement.requestFullscreen().catch(() => {});
-}, { once: true });
-    
-    
       if ('serviceWorker' in navigator) {    
     navigator.serviceWorker.register('sw.js')    
       .then(reg => console.log('✅ Service Worker registered:', reg.scope))    
