@@ -65,7 +65,15 @@ html, body {
   height: 100%;  
   object-fit: cover;  
 }  
-
+  
+@media (orientation: portrait) {  
+  #videoContainer video {  
+    width: auto;  
+    height: 100vh;  
+    object-fit: contain;  
+  }  
+}  
+  
 @media (orientation: landscape) {  
   #videoContainer video {  
     width: 100vw;  
