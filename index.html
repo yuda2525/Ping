@@ -65,7 +65,7 @@ html, body {
   height: 100%;  
   object-fit: cover;  
 }  
-  
+
 @media (orientation: landscape) {  
   #videoContainer video {  
     width: 100vw;  
@@ -96,27 +96,18 @@ html, body {
   object-fit: contain;  
   background: black;  
 }  
-
-    body {
-      margin: 0;
-      padding: 0;
-      background: #000;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-
-    #videoInput {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      z-index: 10;
-    }
-
+  
+    body {  
+      margin: 0;  
+      background: #111;  
+      display: flex;  
+      justify-content: center;  
+      align-items: center;  
+      height: 100vh;  
+    }  
     .video-wrapper {  
-      width: 100%;
-      height: 100%;
+      width: 90vw;  
+      max-height: 90vh;  
       background: #000;  
       display: flex;  
       justify-content: center;  
@@ -273,24 +264,10 @@ mainVideo.addEventListener("play", () => {
   }    
 });    
         
-        
-        minimizeBtn.onclick = () => {
-  videoContainer.style.display = "none";
-  miniPlayer.style.display = "block";
-  miniVideo.currentTime = mainVideo.currentTime;
-  miniVideo.play();
-};
-
-miniPlayer.onclick = () => {
-  miniPlayer.style.display = "none";
-  videoContainer.style.display = "flex";
-  mainVideo.currentTime = miniVideo.currentTime;
-  mainVideo.play();
-};
   
-const input = document.getElementById("videoInput");
-const wrapper = document.getElementById("videoWrapper");
-const video = document.getElementById("mainVideo"); // ini baru bener
+const video = document.getElementById("video");  
+const input = document.getElementById("videoInput");  
+const wrapper = document.getElementById("videoWrapper");  
 let hasEnteredFullscreen = false;  
   
 // ========== Adaptive Aspect Ratio ==========  
