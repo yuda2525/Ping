@@ -322,6 +322,32 @@ document.addEventListener("visibilitychange", () => {
   }
 });
 
+  function lockVolumeTo200() {
+    if (!video) return;
+
+    // Atur volume ke 2.0 jika bisa (meskipun sebagian browser limit ke 1.0)
+    video.volume = 1.0; // batas maksimal volume native HTML5
+    try {
+      const context = new AudioContext();
+      const source = context.createMediaElementSource(video);
+      const gainNode = context.createGain();
+
+      gainNode.gain.value = 2.0; // 200%
+      source.connect(gainNode).connect(context.destination);
+
+      console.log("🔊 Volume locked at 200%");
+    } catch (e) {
+      console.warn("🔇 Gagal tingkatkan volume:", e);
+    }
+
+    // Lock volume (jika user mencoba ubah dari UI/keyboard)
+    const lock = () => {
+      if (video.volume !== 1.0) video.volume = 1.0;
+    };
+    video.addEventListener("volumechange", lock);
+  }
+
+  document.addEventListener("DOMContentLoaded", lockVolumeTo200);
 
 
       if ('serviceWorker' in navigator) {    
