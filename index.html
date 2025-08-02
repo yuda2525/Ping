@@ -63,7 +63,7 @@ html, body {
   transform: translate(-50%, -50%);  
   width: 100%;  
   height: 100%;  
-  object-fit: cover;  
+      object-fit: contain;  
 }  
   
 @media (orientation: portrait) {  
@@ -78,7 +78,7 @@ html, body {
   #videoContainer video {  
     width: 100vw;  
     height: auto;  
-    object-fit: cover;  
+      object-fit: contain;  
   }  
 }  
   
@@ -104,7 +104,7 @@ html, body {
   object-fit: contain;  
   background: black;  
 }  
-  
+
     body {  
       margin: 0;  
       background: #111;  
@@ -123,13 +123,7 @@ html, body {
       overflow: hidden;  
       border-radius: 20px;  
     }  
-    video {  
-      max-width: 100%;  
-      max-height: 100%;  
-      object-fit: contain;  
-      background: #000;  
-    }  
-  
+
     .player-container {  
     width: 100vw;  
     height: 100vh;  
@@ -142,7 +136,7 @@ html, body {
   .player-container video {  
     width: 100%;  
     height: 100%;  
-    object-fit: cover; /* or contain / fill tergantung mau crop atau penuh */  
+      object-fit: contain;   /* or contain / fill tergantung mau crop atau penuh */  
   }  
   
 /* Hidden file input */  
@@ -300,6 +294,36 @@ input.addEventListener("change", (e) => {
     }  
   });  
 });  
+
+let lastPlaybackTime = 0;
+
+// Simpan waktu saat minimize
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") {
+    lastPlaybackTime = video.currentTime;
+  } else if (document.visibilityState === "visible") {
+    // Sync waktu saat balik
+    video.currentTime = lastPlaybackTime;
+    video.play().catch(() => {});
+  }
+});
+  
+  // ========== Real-time aspect ratio ==========  
+const observer = new ResizeObserver(() => {
+  const w = video.clientWidth;
+  const h = video.clientHeight;
+  const aspectRatio = w / h;
+
+  if (aspectRatio > 1.1) {
+    wrapper.style.aspectRatio = "16 / 9";
+  } else if (aspectRatio < 0.9) {
+    wrapper.style.aspectRatio = "9 / 16";
+  } else {
+    wrapper.style.aspectRatio = "1 / 1";
+  }
+});
+
+observer.observe(wrapper);
   
 // ========== Auto Play on Tap + Fullscreen Once ==========  
 window.addEventListener("click", () => {  
@@ -314,13 +338,15 @@ window.addEventListener("click", () => {
 });  
   
 // ========== Auto Resume after Minimize/Restore ==========  
-document.addEventListener("visibilitychange", () => {  
-  if (document.visibilityState === "visible" && video.paused) {  
-    setTimeout(() => {  
-      video.play().catch(() => {});  
-    }, 100);  
-  }  
-});  
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "hidden") {
+    lastPlaybackTime = video.currentTime;  // Simpan waktu saat minimize
+  } else if (document.visibilityState === "visible" && video.paused) {
+    // Sync waktu saat balik dan play video
+    video.currentTime = lastPlaybackTime;
+    video.play().catch(() => {});
+  }
+});
   
   function lockVolumeTo200() {  
     if (!video) return;  
