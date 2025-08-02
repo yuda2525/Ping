@@ -114,7 +114,9 @@
     <video id="miniVideo" muted playsinline></video>
   </div>
 
-  <script>
+<script>
+window.addEventListener("error", e => console.error("❌ Global Error:", e.message));
+  	
     const fileInput = document.getElementById("fileInput");
     const openButton = document.getElementById("openButton");
     const mainVideo = document.getElementById("mainVideo");
@@ -185,6 +187,8 @@
         .then(reg => console.log('✅ Service Worker:', reg.scope))
         .catch(err => console.error('❌ SW Error:', err));
     }
-  </script>
+    
+console.log("✅ Script Loaded");  
+</script>  
 </body>
 </html>
