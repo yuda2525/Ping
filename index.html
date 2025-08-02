@@ -282,33 +282,74 @@ mainVideo.addEventListener("play", () => {
 });      
           
     
-const video = document.getElementById("video");    
-const input = document.getElementById("videoInput");    
-const wrapper = document.getElementById("videoWrapper");    
-let hasEnteredFullscreen = false;    
+
+const video = document.getElementById("video");      
+const input = document.getElementById("videoInput");      
+const wrapper = document.getElementById("videoWrapper");      
+let hasEnteredFullscreen = false;      
+      
+// ========== Adaptive Aspect Ratio ==========      
+input.addEventListener("change", (e) => {      
+  const file = e.target.files[0];      
+  if (!file) return;      
+      
+  const url = URL.createObjectURL(file);      
+  video.src = url;      
+      
+  video.addEventListener("loadedmetadata", () => {      
+    const w = video.videoWidth;      
+    const h = video.videoHeight;      
+    const aspectRatio = w / h;      
+      
+    if (aspectRatio > 1.1) {      
+      wrapper.style.aspectRatio = "16 / 9";      
+    } else if (aspectRatio < 0.9) {      
+      wrapper.style.aspectRatio = "9 / 16";      
+    } else {      
+      wrapper.style.aspectRatio = "1 / 1";      
+    }      
+  });      
+});      
     
-// ========== Adaptive Aspect Ratio ==========    
-input.addEventListener("change", (e) => {    
-  const file = e.target.files[0];    
-  if (!file) return;    
+let lastPlaybackTime = 0;    
     
-  const url = URL.createObjectURL(file);    
-  video.src = url;    
-    
-  video.addEventListener("loadedmetadata", () => {    
-    const w = video.videoWidth;    
-    const h = video.videoHeight;    
-    const aspectRatio = w / h;    
-    
-    if (aspectRatio > 1.1) {    
-      wrapper.style.aspectRatio = "16 / 9";    
-    } else if (aspectRatio < 0.9) {    
-      wrapper.style.aspectRatio = "9 / 16";    
-    } else {    
-      wrapper.style.aspectRatio = "1 / 1";    
-    }    
-  });    
+// Simpan waktu saat minimize    
+document.addEventListener("visibilitychange", () => {    
+  if (document.visibilityState === "hidden") {    
+    lastPlaybackTime = video.currentTime;    
+  } else if (document.visibilityState === "visible") {    
+    // Sync waktu saat balik    
+    video.currentTime = lastPlaybackTime;    
+    video.play().catch(() => {});    
+  }    
 });    
+    
+window.addEventListener("orientationchange", () => {    
+  const wrapper = document.getElementById("videoWrapper");    
+  if (window.innerHeight > window.innerWidth) {    
+    wrapper.style.aspectRatio = "9 / 16";    
+  } else {    
+    wrapper.style.aspectRatio = "16 / 9";    
+  }    
+});    
+
+
+// ========== Real-time aspect ratio ==========  
+const observer = new ResizeObserver(() => {
+  const w = mainVideo.clientWidth;
+  const h = mainVideo.clientHeight;
+  const aspectRatio = w / h;
+
+  if (aspectRatio > 1.1) {
+    mainVideo.style.aspectRatio = "16 / 9";
+  } else if (aspectRatio < 0.9) {
+    mainVideo.style.aspectRatio = "9 / 16";
+  } else {
+    mainVideo.style.aspectRatio = "1 / 1";
+  }
+});
+
+observer.observe(mainVideo);
     
 // ========== Auto Play on Tap + Fullscreen Once ==========    
 window.addEventListener("click", () => {    
