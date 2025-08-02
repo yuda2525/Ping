@@ -1,388 +1,414 @@
-<!DOCTYPE html>  
-<html lang="id">  
-<head>  
-<meta charset="UTF-8" />  
-  <meta name="author" content="Y&Z Studio - Powered by AI & Human Creativity">  
-<meta name="copyright" content="© 2025 Y&Z Studio - yudabastard84@gmail.com">  
-	<!-- Meta dasar -->  
-<meta charset="UTF-8">  
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">  
-<meta name="theme-color" content="#1e1e1e"> <!-- Warna status bar -->  
-<meta name="mobile-web-app-capable" content="yes">  
-<meta name="apple-mobile-web-app-capable" content="yes">  
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">  
-<meta name="apple-mobile-web-app-title" content="My Audio App">  
+<!DOCTYPE html>    
+<html lang="id">    
+<head>    
+<meta charset="UTF-8" />    
+  <meta name="author" content="Y&Z Studio - Powered by AI & Human Creativity">    
+<meta name="copyright" content="© 2025 Y&Z Studio - yudabastard84@gmail.com">    
+	<!-- Meta dasar -->    
+<meta charset="UTF-8">    
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">    
+<meta name="theme-color" content="#1e1e1e"> <!-- Warna status bar -->    
+<meta name="mobile-web-app-capable" content="yes">    
+<meta name="apple-mobile-web-app-capable" content="yes">    
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">    
+<meta name="apple-mobile-web-app-title" content="My Audio App">    
+    
+<!-- PWA Manifest -->    
+<link rel="manifest" href="manifest.json" />    
+<link rel="icon" type="image/png" sizes="192x192" href="192.png" />    
+<link rel="apple-touch-icon" href="192.png" />    
+    
+<!-- SEO -->    
+	<title>My Video App -  Offline</title>    
+<meta name="description" content="Play your favorite video files offline with rich EQ and player features.">    
+    
+<!-- OG (untuk share) -->    
+<meta property="og:title" content="My Video App">    
+<meta property="og:description" content="A fast, offline-ready Video player PWA. Try now!">    
+<meta property="og:image" content="icon-512.png">    
+<meta property="og:type" content="website">    
+<meta property="og:url" content="https://yoursite.com/">    
+    
+<!-- Optional favicon -->    
+<link rel="shortcut icon" href="icon-192.png" type="image/png">    
+  <title>Mini Video Player PWA</title>    
+  <style>    
+html, body {    
+  margin: 0;    
+  padding: 0;    
+  width: 100%;    
+  height: 100%;    
+  background: #000;    
+  font-family: sans-serif;    
+  overflow: hidden;    
+}    
+    
+/* Main video wrapper */    
+#videoContainer {    
+  position: fixed;    
+  top: 0; left: 0;    
+  width: 100vw;    
+  height: 100vh;    
+  overflow: hidden;    
+  display: flex;    
+  align-items: center;    
+  justify-content: center;    
+  background: #000;    
+}    
+    
+#videoContainer video {    
+  position: absolute;    
+  top: 50%;    
+  left: 50%;    
+  transform: translate(-50%, -50%);    
+  width: 100%;    
+  height: 100%;    
+  object-fit: cover;    
+}    
+    
+@media (orientation: portrait) {    
+  #videoContainer video {    
+    width: auto;    
+    height: 100vh;    
+    object-fit: contain;    
+  }    
+}    
+    
+@media (orientation: landscape) {    
+  #videoContainer video {    
+    width: 100vw;    
+    height: auto;    
+    object-fit: cover;    
+  }    
+}    
+    
+#miniPlayer {    
+  position: fixed;    
+  bottom: 10px;    
+  right: 10px;    
+  width: 200px;    
+  height: 112.5px; /* 16:9 ratio */    
+  background: black;    
+  border-radius: 10px;    
+  overflow: hidden;    
+  z-index: 9999;    
+    display: none;    
+    background: #000;    
+  box-shadow: 0 0 10px rgba(0,0,0,0.5);    
+}    
+    
+#miniPlayer video,    
+#miniVideo {    
+  width: 100%;    
+  height: 100%;    
+  object-fit: contain;    
+  background: black;    
+}    
   
-<!-- PWA Manifest -->  
-<link rel="manifest" href="manifest.json" />  
-<link rel="icon" type="image/png" sizes="192x192" href="192.png" />  
-<link rel="apple-touch-icon" href="192.png" />  
-  
-<!-- SEO -->  
-	<title>My Video App -  Offline</title>  
-<meta name="description" content="Play your favorite video files offline with rich EQ and player features.">  
-  
-<!-- OG (untuk share) -->  
-<meta property="og:title" content="My Video App">  
-<meta property="og:description" content="A fast, offline-ready Video player PWA. Try now!">  
-<meta property="og:image" content="icon-512.png">  
-<meta property="og:type" content="website">  
-<meta property="og:url" content="https://yoursite.com/">  
-  
-<!-- Optional favicon -->  
-<link rel="shortcut icon" href="icon-192.png" type="image/png">  
-  <title>Mini Video Player PWA</title>  
-  <style>  
-html, body {  
-  margin: 0;  
-  padding: 0;  
-  width: 100%;  
-  height: 100%;  
-  background: #000;  
-  font-family: sans-serif;  
-  overflow: hidden;  
-}  
-  
-/* Main video wrapper */  
-#videoContainer {  
-  position: fixed;  
-  top: 0; left: 0;  
-  width: 100vw;  
-  height: 100vh;  
-  overflow: hidden;  
-  display: flex;  
-  align-items: center;  
-  justify-content: center;  
-  background: #000;  
-}  
-  
-#videoContainer video {  
-  position: absolute;  
-  top: 50%;  
-  left: 50%;  
-  transform: translate(-50%, -50%);  
-  width: 100%;  
-  height: 100%;  
-      object-fit: contain;  
-}  
-  
-@media (orientation: portrait) {  
-  #videoContainer video {  
-    width: auto;  
-    height: 100vh;  
-    object-fit: contain;  
-  }  
-}  
-  
-@media (orientation: landscape) {  
-  #videoContainer video {  
-    width: 100vw;  
-    height: auto;  
-      object-fit: contain;  
-  }  
-}  
-  
-#miniPlayer {  
-  position: fixed;  
-  bottom: 10px;  
-  right: 10px;  
-  width: 200px;  
-  height: 112.5px; /* 16:9 ratio */  
-  background: black;  
-  border-radius: 10px;  
-  overflow: hidden;  
-  z-index: 9999;  
-    display: none;  
-    background: #000;  
-  box-shadow: 0 0 10px rgba(0,0,0,0.5);  
-}  
-  
-#miniPlayer video,  
-#miniVideo {  
-  width: 100%;  
-  height: 100%;  
-  object-fit: contain;  
-  background: black;  
-}  
-
     body {  
       margin: 0;  
-      background: #111;  
+      padding: 0;  
+      background: #000;  
       display: flex;  
       justify-content: center;  
       align-items: center;  
       height: 100vh;  
     }  
-    .video-wrapper {  
-      width: 90vw;  
-      max-height: 90vh;  
-      background: #000;  
-      display: flex;  
-      justify-content: center;  
-      align-items: center;  
-      overflow: hidden;  
-      border-radius: 20px;  
+  
+    #videoInput {  
+      position: absolute;  
+      top: 10px;  
+      left: 10px;  
+      z-index: 10;  
     }  
-
-    .player-container {  
-    width: 100vw;  
-    height: 100vh;  
-    display: flex;  
-    justify-content: center;  
-    align-items: center;  
-    background: black;  
-  }  
   
-  .player-container video {  
-    width: 100%;  
-    height: 100%;  
-      object-fit: contain;   /* or contain / fill tergantung mau crop atau penuh */  
-  }  
-  
-/* Hidden file input */  
-#fileInput {  
-  display: none;  
-}  
-  
-/* Open video button */  
-#openButton {  
-  position: absolute;  
-  top: 10px;  
-  left: 10px;  
-  z-index: 1001;  
-  background: rgba(255,255,255,0.1);  
-  padding: 10px 15px;  
-  color: white;  
-  border: none;  
-  border-radius: 8px;  
-  font-size: 14px;  
-  cursor: pointer;  
-}  
-  
-/* Minimize player */  
-#minimizeBtn {  
-  position: absolute;  
-  top: 10px;  
-  right: 10px;  
-  background: rgba(0,0,0,0.4);  
-  color: #fff;  
-  border: none;  
-  font-size: 12px;  
-  padding: 4px 6px;  
-  cursor: pointer;  
-}  
-  
-.vjs-watermark, .plyr__branding, .branding, .video-branding {  
-  display: none !important;  
-}  
-  
-.vjs-powered-by, .vjs-branding, .plyr__badge {  
-  display: none !important;  
-  opacity: 0 !important;  
-  visibility: hidden !important;  
-}  
-  
-  </style>  
-</head>    
-	<body onclick="enterFullscreenOnce()">    
-		  
-		<div class="video-wrapper" id="videoWrapper">    
-</div>    
-<input type="file" accept="video/*" id="videoInput"  hidden />  
-    
-    <div class="player-container" id="playerContainer"></div>  
-	   
-<!-- FILE INPUT + OPEN BUTTON -->  
-<input type="file" id="fileInput" accept="video/*" hidden />  
-<button id="openButton">📁 Ambil Video</button>  
-  
-<!-- VIDEO WRAPPER (BISA DIPAKAI UNTUK MODE NORMAL & MINI) -->  
-<div id="videoContainer">  
-  <video id="mainVideo" controls autoplay playsinline></video>  
-  <button id="minimizeBtn">Minimize</button>  
-</div>  
-  
-<div id="miniPlayer" style="display:none;">  
-  <video id="miniVideo" muted playsinline></video>  
-</div>  
-    
-  <script>    
-  	window.addEventListener("error", e => console.error("❌ Global Error:", e.message));    
-      
-  const fileInput = document.getElementById("fileInput");    
-    const openButton = document.getElementById("openButton");    
-    const mainVideo = document.getElementById("mainVideo");    
-    const miniVideo = document.getElementById("miniVideo");    
-    const videoContainer = document.getElementById("videoContainer");    
-    const miniPlayer = document.getElementById("miniPlayer");    
-    const minimizeBtn = document.getElementById("minimizeBtn");    
-    
-    openButton.onclick = () => fileInput.click();    
-    
-    fileInput.addEventListener("change", (e) => {    
-      const file = e.target.files[0];    
-      if (mainVideo.src) {    
-  mainVideo.pause();    
-  mainVideo.removeAttribute("src");    
-  mainVideo.load();    
-}    
-      if (!file) return;    
-      const url = URL.createObjectURL(file);    
-      mainVideo.src = url;    
-      miniVideo.src = url;    
-      mainVideo.play();    
-      requestFullscreenLandscape();    
-    });    
-    
-    minimizeBtn.onclick = () => {    
-      videoContainer.style.display = "none";    
-      miniPlayer.style.display = "block";    
-      miniVideo.play();    
-    };    
-    
-    miniPlayer.onclick = () => {    
-      miniPlayer.style.display = "none";    
-      videoContainer.style.display = "flex";    
-      mainVideo.play();    
-    };    
-    
-    function requestFullscreenLandscape() {    
-      if (screen.orientation && screen.orientation.lock) {    
-        screen.orientation.lock("landscape").catch(() => {});    
-      }    
-      if (mainVideo.requestFullscreen) {    
-        mainVideo.requestFullscreen().catch(() => {});    
-      } else if (mainVideo.webkitRequestFullscreen) {    
-        mainVideo.webkitRequestFullscreen();    
-      }    
+    .video-wrapper {    
+      width: 100%;  
+      height: 100%;  
+      background: #000;    
+      display: flex;    
+      justify-content: center;    
+      align-items: center;    
+      overflow: hidden;    
+      border-radius: 20px;    
     }    
+    video {    
+      max-width: 100%;    
+      max-height: 100%;    
+      object-fit: contain;    
+      background: #000;    
+    }    
+    
+    .player-container {    
+    width: 100vw;    
+    height: 100vh;    
+    display: flex;    
+    justify-content: center;    
+    align-items: center;    
+    background: black;    
+  }    
+    
+  .player-container video {    
+    width: 100%;    
+    height: 100%;    
+    object-fit: cover; /* or contain / fill tergantung mau crop atau penuh */    
+  }    
+    
+/* Hidden file input */    
+#fileInput {    
+  display: none;    
+}    
+    
+/* Open video button */    
+#openButton {    
+  position: absolute;    
+  top: 10px;    
+  left: 10px;    
+  z-index: 1001;    
+  background: rgba(255,255,255,0.1);    
+  padding: 10px 15px;    
+  color: white;    
+  border: none;    
+  border-radius: 8px;    
+  font-size: 14px;    
+  cursor: pointer;    
+}    
+    
+/* Minimize player */    
+#minimizeBtn {    
+  position: absolute;    
+  top: 10px;    
+  right: 10px;    
+  background: rgba(0,0,0,0.4);    
+  color: #fff;    
+  border: none;    
+  font-size: 12px;    
+  padding: 4px 6px;    
+  cursor: pointer;    
+}    
+    
+.vjs-watermark, .plyr__branding, .branding, .video-branding {    
+  display: none !important;    
+}    
+    
+.vjs-powered-by, .vjs-branding, .plyr__badge {    
+  display: none !important;    
+  opacity: 0 !important;    
+  visibility: hidden !important;    
+}    
+    
+  </style>    
+</head>      
+	<body onclick="enterFullscreenOnce()">      
+		    
+		<div class="video-wrapper" id="videoWrapper">      
+</div>      
+<input type="file" accept="video/*" id="videoInput"  hidden />    
+      
+    <div class="player-container" id="playerContainer"></div>    
+	     
+<!-- FILE INPUT + OPEN BUTTON -->    
+<input type="file" id="fileInput" accept="video/*" hidden />    
+<button id="openButton">📁 Ambil Video</button>    
+    
+<!-- VIDEO WRAPPER (BISA DIPAKAI UNTUK MODE NORMAL & MINI) -->    
+<div id="videoContainer">    
+  <video id="mainVideo" controls autoplay playsinline></video>    
+  <button id="minimizeBtn">Minimize</button>    
+</div>    
+    
+<div id="miniPlayer" style="display:none;">    
+  <video id="miniVideo" muted playsinline></video>    
+</div>    
+      
+  <script>      
+  	window.addEventListener("error", e => console.error("❌ Global Error:", e.message));      
         
-    // Saat video mulai play    
-mainVideo.addEventListener("play", () => {    
-  if (screen.orientation && screen.orientation.lock) {    
-    screen.orientation.lock("landscape").catch((err) => {    
-      console.warn("Gagal rotasi otomatis:", err);    
-    });    
+  const fileInput = document.getElementById("fileInput");      
+    const openButton = document.getElementById("openButton");      
+    const mainVideo = document.getElementById("mainVideo");      
+    const miniVideo = document.getElementById("miniVideo");      
+    const videoContainer = document.getElementById("videoContainer");      
+    const miniPlayer = document.getElementById("miniPlayer");      
+    const minimizeBtn = document.getElementById("minimizeBtn");      
+      
+    openButton.onclick = () => fileInput.click();      
+      
+    fileInput.addEventListener("change", (e) => {      
+      const file = e.target.files[0];      
+      if (mainVideo.src) {      
+  mainVideo.pause();      
+  mainVideo.removeAttribute("src");      
+  mainVideo.load();      
+}      
+      if (!file) return;      
+      const url = URL.createObjectURL(file);      
+      mainVideo.src = url;      
+      miniVideo.src = url;      
+      mainVideo.play();      
+      requestFullscreenLandscape();      
+    });      
+      
+    minimizeBtn.onclick = () => {      
+      videoContainer.style.display = "none";      
+      miniPlayer.style.display = "block";      
+      miniVideo.play();      
+    };      
+      
+    miniPlayer.onclick = () => {      
+      miniPlayer.style.display = "none";      
+      videoContainer.style.display = "flex";      
+      mainVideo.play();      
+    };      
+      
+    function requestFullscreenLandscape() {      
+      if (screen.orientation && screen.orientation.lock) {      
+        screen.orientation.lock("landscape").catch(() => {});      
+      }      
+      if (mainVideo.requestFullscreen) {      
+        mainVideo.requestFullscreen().catch(() => {});      
+      } else if (mainVideo.webkitRequestFullscreen) {      
+        mainVideo.webkitRequestFullscreen();      
+      }      
+    }      
+          
+    // Saat video mulai play      
+mainVideo.addEventListener("play", () => {      
+  if (screen.orientation && screen.orientation.lock) {      
+    screen.orientation.lock("landscape").catch((err) => {      
+      console.warn("Gagal rotasi otomatis:", err);      
+    });      
+  }      
+});      
+          
+    
+const video = document.getElementById("video");    
+const input = document.getElementById("videoInput");    
+const wrapper = document.getElementById("videoWrapper");    
+let hasEnteredFullscreen = false;    
+    
+      
+// ========== Adaptive Aspect Ratio ==========      
+input.addEventListener("change", (e) => {      
+  const file = e.target.files[0];      
+  if (!file) return;      
+      
+  const url = URL.createObjectURL(file);      
+  video.src = url;      
+      
+  video.addEventListener("loadedmetadata", () => {      
+    const w = video.videoWidth;      
+    const h = video.videoHeight;      
+    const aspectRatio = w / h;      
+      
+    if (aspectRatio > 1.1) {      
+      wrapper.style.aspectRatio = "16 / 9";      
+    } else if (aspectRatio < 0.9) {      
+      wrapper.style.aspectRatio = "9 / 16";      
+    } else {      
+      wrapper.style.aspectRatio = "1 / 1";      
+    }      
+  });      
+});      
+    
+let lastPlaybackTime = 0;    
+    
+// Simpan waktu saat minimize    
+document.addEventListener("visibilitychange", () => {    
+  if (document.visibilityState === "hidden") {    
+    lastPlaybackTime = video.currentTime;    
+  } else if (document.visibilityState === "visible") {    
+    // Sync waktu saat balik    
+    video.currentTime = lastPlaybackTime;    
+    video.play().catch(() => {});    
   }    
 });    
-        
-  
-const video = document.getElementById("video");  
-const input = document.getElementById("videoInput");  
-const wrapper = document.getElementById("videoWrapper");  
-let hasEnteredFullscreen = false;  
-  
-// ========== Adaptive Aspect Ratio ==========  
-input.addEventListener("change", (e) => {  
-  const file = e.target.files[0];  
-  if (!file) return;  
-  
-  const url = URL.createObjectURL(file);  
-  video.src = url;  
-  
-  video.addEventListener("loadedmetadata", () => {  
-    const w = video.videoWidth;  
-    const h = video.videoHeight;  
-    const aspectRatio = w / h;  
-  
-    if (aspectRatio > 1.1) {  
-      wrapper.style.aspectRatio = "16 / 9";  
-    } else if (aspectRatio < 0.9) {  
-      wrapper.style.aspectRatio = "9 / 16";  
-    } else {  
-      wrapper.style.aspectRatio = "1 / 1";  
-    }  
-  });  
-});  
-
-let lastPlaybackTime = 0;
-
-// Simpan waktu saat minimize
-document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "hidden") {
-    lastPlaybackTime = video.currentTime;
-  } else if (document.visibilityState === "visible") {
-    // Sync waktu saat balik
-    video.currentTime = lastPlaybackTime;
-    video.play().catch(() => {});
-  }
-});
-  
-  // ========== Real-time aspect ratio ==========  
-const observer = new ResizeObserver(() => {
-  const w = video.clientWidth;
-  const h = video.clientHeight;
-  const aspectRatio = w / h;
-
-  if (aspectRatio > 1.1) {
-    wrapper.style.aspectRatio = "16 / 9";
-  } else if (aspectRatio < 0.9) {
-    wrapper.style.aspectRatio = "9 / 16";
-  } else {
-    wrapper.style.aspectRatio = "1 / 1";
-  }
-});
-
-observer.observe(wrapper);
-  
-// ========== Auto Play on Tap + Fullscreen Once ==========  
-window.addEventListener("click", () => {  
-  if (!hasEnteredFullscreen) {  
-    const el = document.getElementById("videoContainer");  
-    if (el?.requestFullscreen) {  
-      el.requestFullscreen().catch((err) => console.warn("Fullscreen gagal:", err));  
-    }  
-    hasEnteredFullscreen = true;  
-  }  
-  video.play().catch(() => {});  
-});  
-  
-// ========== Auto Resume after Minimize/Restore ==========  
-document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "hidden") {
-    lastPlaybackTime = video.currentTime;  // Simpan waktu saat minimize
-  } else if (document.visibilityState === "visible" && video.paused) {
-    // Sync waktu saat balik dan play video
-    video.currentTime = lastPlaybackTime;
-    video.play().catch(() => {});
-  }
-});
-  
-  function lockVolumeTo200() {  
-    if (!video) return;  
-  
-    // Atur volume ke 2.0 jika bisa (meskipun sebagian browser limit ke 1.0)  
-    video.volume = 1.0; // batas maksimal volume native HTML5  
-    try {  
-      const context = new AudioContext();  
-      const source = context.createMediaElementSource(video);  
-      const gainNode = context.createGain();  
-  
-      gainNode.gain.value = 2.0; // 200%  
-      source.connect(gainNode).connect(context.destination);  
-  
-      console.log("🔊 Volume locked at 200%");  
-    } catch (e) {  
-      console.warn("🔇 Gagal tingkatkan volume:", e);  
-    }  
-  
-    // Lock volume (jika user mencoba ubah dari UI/keyboard)  
-    const lock = () => {  
-      if (video.volume !== 1.0) video.volume = 1.0;  
-    };  
-    video.addEventListener("volumechange", lock);  
-  }  
-  
-  document.addEventListener("DOMContentLoaded", lockVolumeTo200);  
-  
-  
-      if ('serviceWorker' in navigator) {      
-    navigator.serviceWorker.register('sw.js')      
-      .then(reg => console.log('✅ Service Worker registered:', reg.scope))      
-      .catch(err => console.error('❌ Service Worker registration failed:', err));      
+    
+window.addEventListener("orientationchange", () => {    
+  const wrapper = document.getElementById("videoWrapper");    
+  if (window.innerHeight > window.innerWidth) {    
+    wrapper.style.aspectRatio = "9 / 16";    
+  } else {    
+    wrapper.style.aspectRatio = "16 / 9";    
+  }    
+});    
+      
+  // ========== Real-time aspect ratio ==========      
+const observer = new ResizeObserver(() => {    
+  const w = video.clientWidth;    
+  const h = video.clientHeight;    
+  const aspectRatio = w / h;    
+    
+  if (aspectRatio > 1.1) {    
+    wrapper.style.aspectRatio = "16 / 9";    
+  } else if (aspectRatio < 0.9) {    
+    wrapper.style.aspectRatio = "9 / 16";    
+  } else {    
+    wrapper.style.aspectRatio = "1 / 1";    
+  }    
+});    
+    
+observer.observe(wrapper);    
+      
+// ========== Auto Play on Tap + Fullscreen Once ==========      
+window.addEventListener("click", () => {      
+  if (!hasEnteredFullscreen) {      
+    const el = document.getElementById("videoContainer");      
+    if (el?.requestFullscreen) {      
+      el.requestFullscreen().catch((err) => console.warn("Fullscreen gagal:", err));      
+    }      
+    hasEnteredFullscreen = true;      
   }      
+  video.play().catch(() => {});      
+});      
+      
+// ========== Auto Resume after Minimize/Restore ==========      
+document.addEventListener("visibilitychange", () => {      
+  if (document.visibilityState === "visible" && video.paused) {      
+    setTimeout(() => {      
+      video.play().catch(() => {});      
+    }, 100);      
+  }      
+});      
+      
+  function lockVolumeTo200() {      
+    if (!video) return;      
+      
+    // Atur volume ke 2.0 jika bisa (meskipun sebagian browser limit ke 1.0)      
+    video.volume = 1.0; // batas maksimal volume native HTML5      
+    try {      
+      const context = new AudioContext();      
+      const source = context.createMediaElementSource(video);      
+      const gainNode = context.createGain();      
+      
+      gainNode.gain.value = 2.0; // 200%      
+      source.connect(gainNode).connect(context.destination);      
+      
+      console.log("🔊 Volume locked at 200%");      
+    } catch (e) {      
+      console.warn("🔇 Gagal tingkatkan volume:", e);      
+    }      
+      
+    // Lock volume (jika user mencoba ubah dari UI/keyboard)      
+    const lock = () => {      
+      if (video.volume !== 1.0) video.volume = 1.0;      
+    };      
+    video.addEventListener("volumechange", lock);      
+  }      
+      
+  document.addEventListener("DOMContentLoaded", lockVolumeTo200);      
+    
+    
+      if ('serviceWorker' in navigator) {        
+    navigator.serviceWorker.register('sw.js')        
+      .then(reg => console.log('✅ Service Worker registered:', reg.scope))        
+      .catch(err => console.error('❌ Service Worker registration failed:', err));        
+  }        
+    
+console.log("✅ Script Loaded");    
+  </script>    
+</body>    
+</html>  
   
-console.log("✅ Script Loaded");  
-  </script>  
-</body>  
-</html>
+  
+  
