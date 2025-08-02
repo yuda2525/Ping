@@ -215,6 +215,19 @@ html, body {
   width: 100%;
   display: block;
 }
+
+
+#presetSelect {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  background: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 14px;
+}
     
   </style>    
 </head>      
@@ -232,8 +245,22 @@ html, body {
     
 <!-- VIDEO WRAPPER (BISA DIPAKAI UNTUK MODE NORMAL & MINI) -->    
 <div id="videoContainer">    
-  <video id="mainVideo" controls autoplay playsinline></video>    
+  <video id="mainVideo" controls autoplay playsinline></video>     
 </div>    
+   
+    <select id="presetSelect">
+    	  <option value="Same Soft">Same Soft</option>
+  <option value="Broadcast Voice">Broadcast Voice</option>
+  <option value="Live Concert Hall">Live Concert Hall</option>
+  <option value="Music Video Pop">Music Video Pop</option>
+    <option value="Studio Cover">Studio Cover</option>
+      <option value="EDM Visualizer">EDM Visualizer</option>
+  <option value="Horror Ambience">Horror Ambience</option>
+      <option value="Action Film Punch">Action Film Punch</option>
+  <option value="Romantic Drama">Romantic Drama</option>
+  <option value="Orchestra Film Score">Orchestra Film Score</option>
+        <option value="Surround Feel">Surround Feel</option>
+</select>
     
   <script>      
   	window.addEventListener("error", e => console.error("❌ Global Error:", e.message));      
@@ -462,6 +489,136 @@ document.getElementById("fileInput").addEventListener("change", (e) => {
   });
 });
 
+const presets = {
+  "Broadcast Voice": {
+    eq: [3, 4, 3, 1, 0, -2, -3, -4, -3, -1, 1, 2],
+    compressor: { threshold: -20, ratio: 3, attack: 0.01 },
+    enhancer: { presence: 4, brilliance: 2, warmth: 1 },
+    reverb: 0.05,
+    stereoWidth: 0.4
+  },
+  "Live Concert Hall": {
+    eq: [5, 3, 0, -2, -3, -2, 0, 2, 3, 4, 5, 6],
+    compressor: { threshold: -15, ratio: 2.5, attack: 0.03 },
+    enhancer: { presence: 2, brilliance: 4, warmth: 2 },
+    reverb: 0.6,
+    stereoWidth: 1.0
+  },
+  "Music Video Pop": {
+    eq: [4, 3, 1, -1, -2, -1, 1, 2, 4, 5, 6, 5],
+    compressor: { threshold: -18, ratio: 3, attack: 0.02 },
+    enhancer: { presence: 3, brilliance: 4, warmth: 1 },
+    reverb: 0.2,
+    stereoWidth: 0.9
+  },
+  "Studio Cover": {
+    eq: [2, 3, 3, 2, 0, -1, -2, -2, 0, 2, 3, 3],
+    compressor: { threshold: -16, ratio: 2.5, attack: 0.01 },
+    enhancer: { presence: 3, brilliance: 2, warmth: 3 },
+    reverb: 0.1,
+    stereoWidth: 0.7
+  },
+  "EDM Visualizer": {
+    eq: [6, 5, 3, 0, -2, -1, 1, 3, 5, 6, 6, 6],
+    compressor: { threshold: -12, ratio: 4, attack: 0.005 },
+    enhancer: { presence: 4, brilliance: 5, warmth: 1 },
+    reverb: 0.4,
+    stereoWidth: 1.0
+  },
+  "Horror Ambience": {
+    eq: [-2, -3, -4, -2, 0, 1, 3, 4, 3, 2, 1, 0],
+    compressor: { threshold: -25, ratio: 1.8, attack: 0.1 },
+    enhancer: { presence: 1, brilliance: 0, warmth: 5 },
+    reverb: 0.6,
+    stereoWidth: 0.8
+  },
+  "Action Film Punch": {
+    eq: [5, 4, 2, 0, -1, -2, -1, 2, 4, 5, 4, 3],
+    compressor: { threshold: -10, ratio: 4, attack: 0.008 },
+    enhancer: { presence: 4, brilliance: 3, warmth: 2 },
+    reverb: 0.2,
+    stereoWidth: 0.95
+  },
+  "Romantic Drama": {
+    eq: [1, 2, 1, 0, -1, -1, 0, 2, 3, 2, 1, 1],
+    compressor: { threshold: -22, ratio: 2.2, attack: 0.015 },
+    enhancer: { presence: 2, brilliance: 1, warmth: 4 },
+    reverb: 0.3,
+    stereoWidth: 0.75
+  },
+  "Orchestra Film Score": {
+    eq: [3, 3, 2, 0, -1, -2, -1, 2, 3, 4, 5, 6],
+    compressor: { threshold: -18, ratio: 3, attack: 0.01 },
+    enhancer: { presence: 2, brilliance: 3, warmth: 3 },
+    reverb: 0.5,
+    stereoWidth: 1.0
+  },
+  "Natural Documentary": {
+    eq: [1, 1, 0, 0, 0, 0, 0, 0, 1, 2, 1, 1],
+    compressor: { threshold: -24, ratio: 1.5, attack: 0.03 },
+    enhancer: { presence: 1, brilliance: 1, warmth: 2 },
+    reverb: 0.1,
+    stereoWidth: 0.5
+  },
+  "City Streets Scene": {
+    eq: [0, -1, -2, -1, 0, 1, 2, 3, 3, 2, 1, 0],
+    compressor: { threshold: -20, ratio: 2.5, attack: 0.02 },
+    enhancer: { presence: 2, brilliance: 1, warmth: 2 },
+    reverb: 0.2,
+    stereoWidth: 0.8
+  },
+  "Surround Feel": {
+    eq: [4, 3, 2, 0, -2, -3, -1, 1, 3, 4, 5, 4],
+    compressor: { threshold: -16, ratio: 3.5, attack: 0.01 },
+    enhancer: { presence: 3, brilliance: 4, warmth: 3 },
+    reverb: 0.4,
+    stereoWidth: 1.0
+  },
+  "Same Soft": {
+    eq: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    compressor: { threshold: -22, ratio: 1.5, attack: 0.05 },
+    enhancer: { presence: 0, brilliance: 0, warmth: 0 },
+    reverb: 0.0,
+    stereoWidth: 0.5
+  }
+};
+
+let filterNodes = [];
+
+function applyPreset(presetName) {
+  // Disconnect semua filter lama
+  if (filterNodes.length > 0) {
+    try {
+      filterNodes.forEach(f => f.disconnect());
+    } catch (e) {}
+  }
+
+  const config = presets[presetName];
+  filterNodes = config.map(cfg => {
+    const f = ctx.createBiquadFilter();
+    f.type = cfg.type;
+    f.frequency.setValueAtTime(cfg.frequency, ctx.currentTime);
+    f.gain.setValueAtTime(cfg.gain, ctx.currentTime);
+    return f;
+  });
+
+  // Sambungin chain baru
+  if (sourceNode) {
+    sourceNode.disconnect();
+    sourceNode.connect(filterNodes[0]);
+
+    for (let i = 0; i < filterNodes.length - 1; i++) {
+      filterNodes[i].connect(filterNodes[i + 1]);
+    }
+
+    // Akhir ke gain
+    filterNodes[filterNodes.length - 1].connect(ctx.destination);
+  }
+}
+
+document.getElementById("presetSelect").addEventListener("change", (e) => {
+  applyPreset(e.target.value);
+});
 
 
       
