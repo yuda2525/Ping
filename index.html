@@ -129,14 +129,20 @@ html, body {
       object-fit: contain;
       background: #000;
     }
-    
-      .player-container {
+
+    .player-container {
     width: 100vw;
     height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    object-fit: cover;
+    background: black;
+  }
+
+  .player-container video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* or contain / fill tergantung mau crop atau penuh */
   }
 
 /* Hidden file input */
@@ -266,59 +272,57 @@ mainVideo.addEventListener("play", () => {
   }  
 });  
       
-        const video = document.getElementById("video");  
-    const input = document.getElementById("videoInput");  
-    const wrapper = document.getElementById("videoWrapper");  
-  
-    input.addEventListener("change", (e) => {  
-      const file = e.target.files[0];  
-      if (!file) return;  
-  
-      const url = URL.createObjectURL(file);  
-      video.src = url;  
-  
-      video.addEventListener("loadedmetadata", () => {  
-        const w = video.videoWidth;  
-        const h = video.videoHeight;  
-  
-        console.log("Aspect:", w + "x" + h);  
-        const aspectRatio = w / h;  
-  
-        // Adaptive behavior  
-        if (aspectRatio > 1.1) {  
-          // Landscape  
-          wrapper.style.aspectRatio = "16 / 9";  
-        } else if (aspectRatio < 0.9) {  
-          // Portrait  
-          wrapper.style.aspectRatio = "9 / 16";  
-        } else {  
-          // Square or nearly square  
-          wrapper.style.aspectRatio = "1 / 1";  
-        }  
-      });  
-    });
-      
-document.addEventListener("visibilitychange", () => {  
-  if (document.visibilityState === "visible" && video.paused) {  
-    video.play().catch(() => {});  
-  }  
-});  
-      
-    let hasEnteredFullscreen = false;  
-  
-    function enterFullscreenOnce() {  
-      if (hasEnteredFullscreen) return;  
-      hasEnteredFullscreen = true;  
-  
-      const el = document.getElementById("videoContainer");  
-  
-      if (el.requestFullscreen) {  
-        el.requestFullscreen().catch(err => {  
-          console.warn("Gagal fullscreen:", err);  
-        });  
-      }  
-    }  
-  
+
+const video = document.getElementById("video");
+const input = document.getElementById("videoInput");
+const wrapper = document.getElementById("videoWrapper");
+let hasEnteredFullscreen = false;
+
+// ========== Adaptive Aspect Ratio ==========
+input.addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const url = URL.createObjectURL(file);
+  video.src = url;
+
+  video.addEventListener("loadedmetadata", () => {
+    const w = video.videoWidth;
+    const h = video.videoHeight;
+    const aspectRatio = w / h;
+
+    if (aspectRatio > 1.1) {
+      wrapper.style.aspectRatio = "16 / 9";
+    } else if (aspectRatio < 0.9) {
+      wrapper.style.aspectRatio = "9 / 16";
+    } else {
+      wrapper.style.aspectRatio = "1 / 1";
+    }
+  });
+});
+
+// ========== Auto Play on Tap + Fullscreen Once ==========
+window.addEventListener("click", () => {
+  if (!hasEnteredFullscreen) {
+    const el = document.getElementById("videoContainer");
+    if (el?.requestFullscreen) {
+      el.requestFullscreen().catch((err) => console.warn("Fullscreen gagal:", err));
+    }
+    hasEnteredFullscreen = true;
+  }
+  video.play().catch(() => {});
+});
+
+// ========== Auto Resume after Minimize/Restore ==========
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && video.paused) {
+    setTimeout(() => {
+      video.play().catch(() => {});
+    }, 100);
+  }
+});
+
+
 
       if ('serviceWorker' in navigator) {    
     navigator.serviceWorker.register('sw.js')    
