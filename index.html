@@ -118,7 +118,7 @@ body {
     border-radius: 12px;
     transition: all 0.5s ease;
   }
-  
+
 /* ====== Global Reset & Base ====== */
 html, body {
   margin: 0;
@@ -164,6 +164,7 @@ html, body {
   background: #000;
   z-index: 1;
 }
+
 #videoContainer video {
   position: absolute;
   top: 50%;
@@ -189,13 +190,6 @@ html, body {
     height: auto;
     object-fit: cover;
   }
-}
-
-video#mainVideo {
-  width: 100vw;
-  height: 100vh;
-  object-fit: contain;
-  background: black; /* biar nggak transparan */
 }
 
 /* ====== Mini Player ====== */
@@ -248,6 +242,22 @@ video#mainVideo {
   cursor: move;
   z-index: 9999;
 }
+    body {    
+      margin: 0;    
+      padding: 0;    
+      background: #111;  
+      display: flex;    
+      justify-content: center;    
+      align-items: center;    
+      height: 100vh;    
+    }    
+
+    video {      
+      max-width: 100%;      
+      max-height: 100%;      
+      object-fit: contain;      
+      background: #000;      
+    }      
 
 /* ====== Player Container (Fullscreen) ====== */
 .player-container {
