@@ -119,177 +119,160 @@ body {
     transition: all 0.5s ease;
   }
   
-html, body {    
-  margin: 0;    
-  padding: 0;    
-  width: 100%;    
-  height: 100%;    
+/* ====== Global Reset & Base ====== */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
   background: #111;
-  font-family: sans-serif;    
-  overflow: hidden;    
-}    
-    
-/* Main video wrapper */    
-#videoContainer {    
-  position: fixed;    
-  top: 0; left: 0;    
-  width: 100vw;    
-  height: 100vh;    
-  overflow: hidden;    
-  display: flex;    
-  align-items: center;    
-  justify-content: center;    
-  background: #000;    
-}    
-    
-#videoContainer video {    
-  position: absolute;    
-  top: 50%;    
-  left: 50%;    
-  transform: translate(-50%, -50%);    
-  width: 100%;    
-  height: 100%;    
-  object-fit: cover;    
-}    
-    
-@media (orientation: portrait) {    
-  #videoContainer video {    
-    width: auto;    
-    height: 100vh;    
-    object-fit: contain;    
-        object-fit: contain !important;
-  }    
-}    
-    
-@media (orientation: landscape) {    
-  #videoContainer video {    
-    width: 100vw;    
-    height: auto;    
-    object-fit: cover;    
-  }    
-}    
-    
-#miniPlayer {    
-  position: fixed;    
-  bottom: 10px;    
-  right: 10px;    
-  width: 200px;    
-  height: 112.5px; /* 16:9 ratio */    
-  background: black;    
-  border-radius: 10px;    
-  overflow: hidden;    
-  z-index: 9999;    
-    display: none;    
-      background: #111;
-}    
-    
-#miniPlayer video,    
-#miniVideo {    
-  width: 100%;    
-  height: 100%;    
-  object-fit: contain;    
-  background: black;    
-}    
-  
-    body {  
-      margin: 0;  
-      padding: 0;  
-      background: #111;
-      display: flex;  
-      justify-content: center;  
-      align-items: center;  
-      height: 100vh;  
-    }  
-  
-    #videoInput {  
-      position: absolute;  
-      top: 10px;  
-      left: 10px;  
-      z-index: 10;  
-    }  
-  
-    .video-wrapper {    
-      width: 100%;  
-      height: 100%;  
-      background: #000;    
-      display: flex;    
-      justify-content: center;    
-      align-items: center;    
-      overflow: hidden;    
-  cursor: move;
-  z-index: 9999;
-  display: none; /* default disembunyikan, muncul saat minimize */
+  font-family: sans-serif;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-    video {    
-      max-width: 100%;    
-      max-height: 100%;    
-      object-fit: contain;    
-      background: #000;    
-    }    
-    
-    .player-container {    
-    width: 100vw;    
-    height: 100vh;    
-    display: flex;    
-    justify-content: center;    
-    align-items: center;    
-    background: black;    
-  }    
-    
-  .player-container video {    
-    width: 100%;    
-    height: 100%;    
-    object-fit: cover; /* or contain / fill tergantung mau crop atau penuh */    
-  }    
-    
-/* Hidden file input */    
-#fileInput {    
-  display: none;    
-}    
-    
-/* Open video button */    
-#openButton {    
-  position: absolute;    
-  top: 10px;    
-  left: 10px;    
-  z-index: 1001;    
-  background: rgba(255,255,255,0.1);    
-  padding: 10px 15px;    
-  color: white;    
-  border: none;    
-  border-radius: 8px;    
-  font-size: 14px;    
-  cursor: pointer;    
-}    
 
-    
-.vjs-watermark, .plyr__branding, .branding, .video-branding {    
-  display: none !important;    
-}    
-    
-.vjs-powered-by, .vjs-branding, .plyr__badge {    
-  display: none !important;    
-  opacity: 0 !important;    
-  visibility: hidden !important;    
-}    
+/* ====== File Input Button ====== */
+#fileInput {
+  display: none;
+}
+#openButton {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1001;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 10px 15px;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
 
+/* ====== Main Video Container ====== */
+#videoContainer {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  z-index: 1;
+}
+#videoContainer video {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Orientation: Portrait */
+@media (orientation: portrait) {
+  #videoContainer video {
+    width: auto;
+    height: 100vh;
+    object-fit: contain;
+  }
+}
+/* Orientation: Landscape */
+@media (orientation: landscape) {
+  #videoContainer video {
+    width: 100vw;
+    height: auto;
+    object-fit: cover;
+  }
+}
+
+video#mainVideo {
+  width: 100vw;
+  height: 100vh;
+  object-fit: contain;
+  background: black; /* biar nggak transparan */
+}
+
+/* ====== Mini Player ====== */
+#miniPlayer {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  width: 200px;
+  height: 112.5px; /* 16:9 */
+  background: #111;
+  border-radius: 10px;
+  overflow: hidden;
+  z-index: 9999;
+  display: none; /* default hidden */
+}
+#miniPlayer video,
+#miniVideo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+/* ====== Floating Player Wrapper (PIP) ====== */
 #floatingVideoWrapper {
   position: fixed;
   bottom: 20px;
   right: 20px;
   width: 200px;
-  z-index: 9999;
   background: #000;
   border-radius: 10px;
   overflow: hidden;
   cursor: move;
+  z-index: 9999;
 }
 #floatingVideoWrapper video {
   width: 100%;
   display: block;
 }
 
-#presetSelect {
+/* ====== Video Wrapper (Hidden by Default) ====== */
+.video-wrapper {
+  width: 100%;
+  height: 100%;
+  background: #000;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  cursor: move;
+  z-index: 9999;
+}
+
+/* ====== Player Container (Fullscreen) ====== */
+.player-container {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: black;
+}
+.player-container video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ====== Branding Removal ====== */
+.vjs-watermark, .plyr__branding, .branding, .video-branding,
+.vjs-powered-by, .vjs-branding, .plyr__badge {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+}
+
+#eqPreset {
   position: absolute;
   top: 10px;
   left: 50%;
@@ -334,22 +317,17 @@ html, body {
 </head>      
 	<body onclick="enterFullscreenOnce()">      
 		    
-		<div class="video-wrapper" id="videoWrapper">      
-</div>      
-<input type="file" accept="video/*" id="videoInput"  hidden />    
+		<div id="videoContainer">
+  <div id="videoWrapper">
+    <video id="mainVideo" playsinline></video>
+  </div>
+</div>
       
-    <div class="player-container" id="playerContainer"></div>    
-	     
 <!-- FILE INPUT + OPEN BUTTON -->    
 <input type="file" id="fileInput" accept="video/*" hidden />    
 <button id="openButton">📁 Ambil Video</button>    
-    
-<!-- VIDEO WRAPPER (BISA DIPAKAI UNTUK MODE NORMAL & MINI) -->    
-<div id="videoContainer">    
-  <video id="mainVideo" controls autoplay playsinline></video>     
-</div>    
    
-    <select id="presetSelect">
+<select id="eqPreset">
     	  <option value="Same Soft">Same Soft</option>
   <option value="Broadcast Voice">Broadcast Voice</option>
   <option value="Live Concert Hall">Live Concert Hall</option>
@@ -375,212 +353,531 @@ html, body {
 	<!-- Script Three.js -->
 <canvas id="hiddenCanvas" style="display: none;"></canvas>
 <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
-  <script>      
-  	window.addEventListener("error", e => console.error("❌ Global Error:", e.message));      
-        
-const fileInput = document.getElementById("fileInput");
-const openButton = document.getElementById("openButton");
-const mainVideo = document.getElementById("mainVideo");
-const videoContainer = document.getElementById("videoContainer");
+<script>
+  window.addEventListener("error", e => console.error("❌ Global Error:", e.message));
 
-    
-// Debug toggle
-const isDev = false;
-function log(...args) {
-  if (isDev) console.log(...args);
-}
-
-fileInput.addEventListener("change", (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const url = URL.createObjectURL(file);
-
-  mainVideo.src = url;
-  mainVideo.autoplay = true;
-  mainVideo.controls = true;
-  mainVideo.playsInline = true;
-
-  // optional: mute kalau audio mau diolah terpisah
-  // mainVideo.muted = true;
-});
-
-    openButton.onclick = () => fileInput.click();      
-      
-    fileInput.addEventListener("change", (e) => {      
-      const file = e.target.files[0];      
-      if (mainVideo.src) {      
-  mainVideo.pause();      
-  mainVideo.removeAttribute("src");      
-  mainVideo.load();      
-}      
-      if (!file) return;      
-      const url = URL.createObjectURL(file);      
-      mainVideo.src = url;      
-      miniVideo.src = url;      
-      mainVideo.play();      
-      requestFullscreenLandscape();      
-    });      
-      
-    function requestFullscreenLandscape() {      
-      if (screen.orientation && screen.orientation.lock) {      
-        screen.orientation.lock("landscape").catch(() => {});      
-      }      
-      if (mainVideo.requestFullscreen) {      
-        mainVideo.requestFullscreen().catch(() => {});      
-      } else if (mainVideo.webkitRequestFullscreen) {      
-        mainVideo.webkitRequestFullscreen();      
-      }      
-    }      
-          
-    // Saat video mulai play      
-mainVideo.addEventListener("play", () => {      
-  if (screen.orientation && screen.orientation.lock) {      
-    screen.orientation.lock("landscape").catch((err) => {      
-      console.warn("Gagal rotasi otomatis:", err);      
-    });      
-  }      
-});      
-         
-
-const video = document.getElementById("video");      
-const input = document.getElementById("videoInput");      
-const wrapper = document.getElementById("videoWrapper");      
-let hasEnteredFullscreen = false;      
-      
-// ========== Adaptive Aspect Ratio ==========      
-input.addEventListener("change", (e) => {      
-  const file = e.target.files[0];      
-  if (!file) return;      
-      
-  const url = URL.createObjectURL(file);      
-  video.src = url;      
-      
-  video.addEventListener("loadedmetadata", () => {      
-    const w = video.videoWidth;      
-    const h = video.videoHeight;      
-    const aspectRatio = w / h;      
-      
-    if (aspectRatio > 1.1) {      
-      wrapper.style.aspectRatio = "16 / 9";      
-    } else if (aspectRatio < 0.9) {      
-      wrapper.style.aspectRatio = "9 / 16";      
-    } else {      
-      wrapper.style.aspectRatio = "1 / 1";      
-    }      
-  });      
-});      
-    
-let lastPlaybackTime = 0;    
-
-    
-window.addEventListener("orientationchange", () => {
-  const wrapper = document.getElementById("videoWrapper");
-  if (window.innerHeight > window.innerWidth) {
-    wrapper.style.aspectRatio = "9 / 16";
-  } else {
-    wrapper.style.aspectRatio = "16 / 9";
-  }
-});
-
-const observer = new ResizeObserver(() => {
-  const w = mainVideo.clientWidth;
-  const h = mainVideo.clientHeight;
-  const aspectRatio = w / h;
-
-  if (aspectRatio > 1.1) {
-    mainVideo.style.aspectRatio = "16 / 9";
-  } else if (aspectRatio < 0.9) {
-    mainVideo.style.aspectRatio = "9 / 16";
-  } else {
-    mainVideo.style.aspectRatio = "1 / 1";
-  }
-});
-
-observer.observe(mainVideo);
-    
-// ========== Auto Play on Tap + Fullscreen Once ==========    
-window.addEventListener("click", () => {    
-  if (!hasEnteredFullscreen) {    
-    const el = document.getElementById("videoContainer");    
-    if (el?.requestFullscreen) {    
-      el.requestFullscreen().catch((err) => console.warn("Fullscreen gagal:", err));    
-    }    
-    hasEnteredFullscreen = true;    
-  }    
-  video.play().catch(() => {});    
-});    
-    
-// ========== Auto Resume after Minimize/Restore ==========    
-document.addEventListener("visibilitychange", () => {
-  const videoContainer = document.getElementById("videoContainer");
-  const miniPlayer = document.getElementById("miniPlayer");
+  const fileInput = document.getElementById("fileInput");
+  const openButton = document.getElementById("openButton");
   const mainVideo = document.getElementById("mainVideo");
-  const miniVideo = document.getElementById("miniVideo");
+  const videoContainer = document.getElementById("videoContainer");
+  const wrapper = document.getElementById("videoWrapper");
 
-  if (!videoContainer || !miniPlayer || !mainVideo || !miniVideo) return;
+  let hasEnteredFullscreen = false;
+  let isDragging = false, offsetX = 0, offsetY = 0;
 
-  if (document.visibilityState === "hidden") {
-    videoContainer.style.display = "none";
-    miniPlayer.style.display = "block";
-    miniVideo.currentTime = mainVideo.currentTime || 0;
-    miniVideo.play().catch(() => {});
-  } else if (document.visibilityState === "visible") {
-    miniVideo.pause();
-    miniPlayer.style.display = "none";
-    videoContainer.style.display = "flex";
-    mainVideo.currentTime = miniVideo.currentTime || 0;
+  // ========== Buka File ==========
+  openButton.onclick = () => fileInput.click();
+
+  fileInput.addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const url = URL.createObjectURL(file);
+
+    if (mainVideo.src) {
+      mainVideo.pause();
+      mainVideo.removeAttribute("src");
+      mainVideo.load();
+    }
+
+    mainVideo.src = url;
+    mainVideo.autoplay = true;
+    mainVideo.controls = true;
+    mainVideo.playsInline = true;
     mainVideo.play().catch(() => {});
 
-    if (mainVideo.paused) {
-      setTimeout(() => {
-        mainVideo.play().catch(() => {});
-      }, 100);
+    requestFullscreenLandscape();
+  });
+
+  // ========== Fullscreen & Orientation ==========
+  function requestFullscreenLandscape() {
+    if (screen.orientation?.lock) {
+      screen.orientation.lock("landscape").catch(() => {});
+    }
+
+    if (mainVideo.requestFullscreen) {
+      mainVideo.requestFullscreen().catch(() => {});
+    } else if (mainVideo.webkitRequestFullscreen) {
+      mainVideo.webkitRequestFullscreen();
     }
   }
-});
 
+  mainVideo.addEventListener("play", () => {
+    if (screen.orientation?.lock) {
+      screen.orientation.lock("landscape").catch(err =>
+        console.warn("Gagal rotasi otomatis:", err)
+      );
+    }
+  });
 
-let isDragging = false, offsetX = 0, offsetY = 0;
+  // ========== Adaptive Aspect Ratio ==========
+  mainVideo.addEventListener("loadedmetadata", () => {
+    const w = mainVideo.videoWidth;
+    const h = mainVideo.videoHeight;
+    const aspectRatio = w / h;
 
-wrapper.addEventListener("mousedown", (e) => {
-  isDragging = true;
-  offsetX = e.clientX - wrapper.offsetLeft;
-  offsetY = e.clientY - wrapper.offsetTop;
-});
+    if (aspectRatio > 1.1) {
+      wrapper.style.aspectRatio = "16 / 9";
+    } else if (aspectRatio < 0.9) {
+      wrapper.style.aspectRatio = "9 / 16";
+    } else {
+      wrapper.style.aspectRatio = "1 / 1";
+    }
+  });
 
-document.addEventListener("mousemove", (e) => {
-  if (!isDragging) return;
-  wrapper.style.left = `${e.clientX - offsetX}px`;
-  wrapper.style.top = `${e.clientY - offsetY}px`;
-  wrapper.style.right = "auto";
-  wrapper.style.bottom = "auto";
-});
+  window.addEventListener("orientationchange", () => {
+    if (window.innerHeight > window.innerWidth) {
+      wrapper.style.aspectRatio = "9 / 16";
+    } else {
+      wrapper.style.aspectRatio = "16 / 9";
+    }
+  });
 
-document.addEventListener("mouseup", () => {
-  isDragging = false;
-});
+  const observer = new ResizeObserver(() => {
+    const w = mainVideo.clientWidth;
+    const h = mainVideo.clientHeight;
+    const aspectRatio = w / h;
 
-window.addEventListener("scroll", () => {
-  if (window.scrollY > 150) {
-    wrapper.style.width = "180px";
-    wrapper.style.bottom = "20px";
-    wrapper.style.right = "20px";
-  } else {
-    wrapper.style.width = "100%";
-    wrapper.style.position = "relative";
+    if (aspectRatio > 1.1) {
+      mainVideo.style.aspectRatio = "16 / 9";
+    } else if (aspectRatio < 0.9) {
+      mainVideo.style.aspectRatio = "9 / 16";
+    } else {
+      mainVideo.style.aspectRatio = "1 / 1";
+    }
+  });
+
+  observer.observe(mainVideo);
+
+  // ========== Fullscreen Once on Tap ==========
+  window.addEventListener("click", () => {
+    if (!hasEnteredFullscreen) {
+      videoContainer?.requestFullscreen?.().catch(err =>
+        console.warn("Fullscreen gagal:", err)
+      );
+      hasEnteredFullscreen = true;
+    }
+    mainVideo.play().catch(() => {});
+  });
+
+  // ========== Drag & Scroll Behavior ==========
+  wrapper.addEventListener("mousedown", (e) => {
+    isDragging = true;
+    offsetX = e.clientX - wrapper.offsetLeft;
+    offsetY = e.clientY - wrapper.offsetTop;
+  });
+
+  document.addEventListener("mousemove", (e) => {
+    if (!isDragging) return;
+    wrapper.style.left = `${e.clientX - offsetX}px`;
+    wrapper.style.top = `${e.clientY - offsetY}px`;
     wrapper.style.right = "auto";
     wrapper.style.bottom = "auto";
-  }
-});
+  });
 
-function applyPortraitMode() {
-  if (window.matchMedia("(orientation: portrait)").matches) {
-    mainVideo.classList.add("portraitVideo");
+  document.addEventListener("mouseup", () => {
+    isDragging = false;
+  });
+
+  window.addEventListener("scroll", () => {
+    if (window.scrollY > 150) {
+      wrapper.style.width = "180px";
+      wrapper.style.bottom = "20px";
+      wrapper.style.right = "20px";
+    } else {
+      wrapper.style.width = "100%";
+      wrapper.style.position = "relative";
+      wrapper.style.right = "auto";
+      wrapper.style.bottom = "auto";
+    }
+  });
+
+  // ========== Portrait Mode Class (optional CSS trigger) ==========
+  function applyPortraitMode() {
+    if (window.matchMedia("(orientation: portrait)").matches) {
+      mainVideo.classList.add("portraitVideo");
+    } else {
+      mainVideo.classList.remove("portraitVideo");
+    }
+  }
+
+
+
+
+
+// ✅ REFACTORED AUDIO EQ + VOLUME++ SCRIPT
+
+const eqPresetSelect = document.getElementById("eqPreset");
+
+const Bands = [32, 64, 125, 250, 500, 1000, 2000, 4000, 8000, 12000, 14000, 16000];
+
+// =============== PRESET EQ ===============
+const eqPresets = {
+	  "Same Soft": {  
+    eq: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],  
+    compressor: { threshold: -22, ratio: 1.5, attack: 0.05 },  
+    enhancer: { presence: 0, brilliance: 0, warmth: 0 },  
+    reverb: 0.0,  
+    stereoWidth: 0.5  
+   },  
+  "Broadcast Voice": {  
+    eq: [3, 4, 3, 1, 0, -2, -3, -4, -3, -1, 1, 2],  
+    compressor: { threshold: -20, ratio: 3, attack: 0.01 },  
+    enhancer: { presence: 4, brilliance: 2, warmth: 1 },  
+    reverb: 0.05,  
+    stereoWidth: 0.4  
+  },  
+  "Live Concert Hall": {  
+    eq: [5, 3, 0, -2, -3, -2, 0, 2, 3, 4, 5, 6],  
+    compressor: { threshold: -15, ratio: 2.5, attack: 0.03 },  
+    enhancer: { presence: 2, brilliance: 4, warmth: 2 },  
+    reverb: 0.6,  
+    stereoWidth: 1.0  
+  },  
+  "Music Video Pop": {  
+    eq: [4, 3, 1, -1, -2, -1, 1, 2, 4, 5, 6, 5],  
+    compressor: { threshold: -18, ratio: 3, attack: 0.02 },  
+    enhancer: { presence: 3, brilliance: 4, warmth: 1 },  
+    reverb: 0.2,  
+    stereoWidth: 0.9  
+  },  
+  "Studio Cover": {  
+    eq: [2, 3, 3, 2, 0, -1, -2, -2, 0, 2, 3, 3],  
+    compressor: { threshold: -16, ratio: 2.5, attack: 0.01 },  
+    enhancer: { presence: 3, brilliance: 2, warmth: 3 },  
+    reverb: 0.1,  
+    stereoWidth: 0.7  
+  },  
+  "EDM Visualizer": {  
+    eq: [6, 5, 3, 0, -2, -1, 1, 3, 5, 6, 6, 6],  
+    compressor: { threshold: -12, ratio: 4, attack: 0.005 },  
+    enhancer: { presence: 4, brilliance: 5, warmth: 1 },  
+    reverb: 0.4,  
+    stereoWidth: 1.0  
+  },  
+  "Horror Ambience": {  
+    eq: [-2, -3, -4, -2, 0, 1, 3, 4, 3, 2, 1, 0],  
+    compressor: { threshold: -25, ratio: 1.8, attack: 0.1 },  
+    enhancer: { presence: 1, brilliance: 0, warmth: 5 },  
+    reverb: 0.6,  
+    stereoWidth: 0.8  
+  },  
+  "Action Film Punch": {  
+    eq: [5, 4, 2, 0, -1, -2, -1, 2, 4, 5, 4, 3],  
+    compressor: { threshold: -10, ratio: 4, attack: 0.008 },  
+    enhancer: { presence: 4, brilliance: 3, warmth: 2 },  
+    reverb: 0.2,  
+    stereoWidth: 0.95  
+  },  
+  "Romantic Drama": {  
+    eq: [1, 2, 1, 0, -1, -1, 0, 2, 3, 2, 1, 1],  
+    compressor: { threshold: -22, ratio: 2.2, attack: 0.015 },  
+    enhancer: { presence: 2, brilliance: 1, warmth: 4 },  
+    reverb: 0.3,  
+    stereoWidth: 0.75  
+  },  
+  "Orchestra Film Score": {  
+    eq: [3, 3, 2, 0, -1, -2, -1, 2, 3, 4, 5, 6],  
+    compressor: { threshold: -18, ratio: 3, attack: 0.01 },  
+    enhancer: { presence: 2, brilliance: 3, warmth: 3 },  
+    reverb: 0.5,  
+    stereoWidth: 1.0  
+  },  
+  "Natural Documentary": {  
+    eq: [1, 1, 0, 0, 0, 0, 0, 0, 1, 2, 1, 1],  
+    compressor: { threshold: -24, ratio: 1.5, attack: 0.03 },  
+    enhancer: { presence: 1, brilliance: 1, warmth: 2 },  
+    reverb: 0.1,  
+    stereoWidth: 0.5  
+  },  
+  "City Streets Scene": {  
+    eq: [0, -1, -2, -1, 0, 1, 2, 3, 3, 2, 1, 0],  
+    compressor: { threshold: -20, ratio: 2.5, attack: 0.02 },  
+    enhancer: { presence: 2, brilliance: 1, warmth: 2 },  
+    reverb: 0.2,  
+    stereoWidth: 0.8  
+  },  
+  "Surround Feel": {  
+    eq: [4, 3, 2, 0, -2, -3, -1, 1, 3, 4, 5, 4],  
+    compressor: { threshold: -16, ratio: 3.5, attack: 0.01 },  
+    enhancer: { presence: 3, brilliance: 4, warmth: 3 },  
+    reverb: 0.4,  
+    stereoWidth: 1.0  
+  }  
+};  
+
+// === 🎧 PRESET EQ DEFINITION
+const volumeBoostPresets = {
+  "Volume++": {
+    eq: [2, 1.5, 1.2, 0.8, 0, 1, 1.8, 2.2, 2.8, 3.5, 3, 2],
+    enhancer: 1.4,
+    compressor: -13.5,
+    limiter: {
+      enabled: true,
+      threshold: -2.8
+    },
+    stereoWidth: 1.08,
+    reverb: {
+      enabled: false
+    },
+    filters: (ctx) => {
+      const lowShelf = ctx.createBiquadFilter();
+      lowShelf.type = "lowshelf";
+      lowShelf.frequency.value = 55;
+      lowShelf.gain.value = 0.3;
+
+      const subDip = ctx.createBiquadFilter();
+      subDip.type = "peaking";
+      subDip.frequency.value = 90;
+      subDip.Q.value = 1.2;
+      subDip.gain.value = -1.5;
+
+      const lowMidCut = ctx.createBiquadFilter();
+      lowMidCut.type = "peaking";
+      lowMidCut.frequency.value = 280;
+      lowMidCut.Q.value = 1.2;
+      lowMidCut.gain.value = -1.6;
+
+      const midBody = ctx.createBiquadFilter();
+      midBody.type = "peaking";
+      midBody.frequency.value = 1150;
+      midBody.Q.value = 1.3;
+      midBody.gain.value = 1.2;
+
+      const clarity = ctx.createBiquadFilter();
+      clarity.type = "peaking";
+      clarity.frequency.value = 3800;
+      clarity.Q.value = 1.1;
+      clarity.gain.value = 0.7;
+
+      const highShelf = ctx.createBiquadFilter();
+      highShelf.type = "highshelf";
+      highShelf.frequency.value = 9000;
+      highShelf.gain.value = 0.4;
+
+      const air = ctx.createBiquadFilter();
+      air.type = "highshelf";
+      air.frequency.value = 17000;
+      air.gain.value = 0.25;
+
+      const harshTamer = ctx.createBiquadFilter();
+      harshTamer.type = "peaking";
+      harshTamer.frequency.value = 5300;
+      harshTamer.Q.value = 4.2;
+      harshTamer.gain.value = -1.4;
+
+      const shimmer = ctx.createBiquadFilter();
+      shimmer.type = "highshelf";
+      shimmer.frequency.value = 16000;
+      shimmer.gain.value = 0.1;
+
+      return [
+        lowShelf, subDip, lowMidCut, midBody, clarity,
+        harshTamer, highShelf, air, shimmer
+      ];
+    }
+  },
+};
+
+// ✅ ALL PRESETS
+const allPresets = {
+  ...eqPresets,
+  ...volumeBoostPresets,
+};
+
+function clamp(val, min, max) {
+  return Math.max(min, Math.min(max, val));
+}
+
+function updateSlidersFromPreset(preset) {
+  isUpdatingSlider = true;
+  preset.eq.forEach((db, i) => {
+    const slider = document.querySelectorAll('.slider')[i];
+    const clampedDb = clamp(db, -12, 12);
+    if (slider) slider.value = 50 + clampedDb * 5;
+    if (eqNodes[i]) eqNodes[i].gain.value = clampedDb;
+  });
+  isUpdatingSlider = false;
+}
+
+function applyCompressorSettings(compressorNode, settings) {
+  if (typeof settings === "number") {
+    compressorNode.threshold.value = settings;
   } else {
-    mainVideo.classList.remove("portraitVideo");
+    const { threshold, ratio, attack, release } = settings;
+    if (threshold !== undefined) compressorNode.threshold.value = threshold;
+    if (ratio !== undefined) compressorNode.ratio.value = ratio;
+    if (attack !== undefined) compressorNode.attack.value = attack;
+    if (release !== undefined) compressorNode.release.value = release;
   }
 }
+
+function applyCustomFilters(filtersFunc) {
+  if (!filtersFunc || !audioCtx || !sourceNode) return;
+
+  try { sourceNode.disconnect(); } catch (_) {}
+
+  const filters = filtersFunc(audioCtx);
+  if (!Array.isArray(filters)) return;
+
+  let chain = sourceNode;
+  filters.forEach(filter => {
+    chain.connect(filter);
+    chain = filter;
+  });
+  chain.connect(audioCtx.destination);
+}
+
+function applyExtraNodes(extraNodes) {
+  if (!extraNodes) return;
+  Object.entries(extraNodes).forEach(([name, values]) => {
+    const node = window[name];
+    if (!node) return;
+    Object.entries(values).forEach(([param, val]) => {
+      if (node[param] !== undefined) node[param].value = val;
+    });
+  });
+}
+
+function applyLogicByName(name) {
+  const logicMap = {
+    "Same Soft": () => {
+      if (clarity) {
+        clarity.gain.value = 2.5;
+        clarity.frequency.value = 4200;
+      }
+      if (clarityGain) clarityGain.gain.value = 0.75;
+      if (toneBias) toneBias.gain.value = 1.3;
+      if (deEsser) deEsser.gain.value = -4;
+    },
+    "Volume++": () => {
+      if (masterGain) masterGain.gain.value = 1.7;
+      if (clarity) {
+        clarity.gain.value = 2.8;
+        clarity.frequency.value = 4300;
+      }
+      if (clarityGain) clarityGain.gain.value = 0.75;
+      if (toneBias) toneBias.gain.value = 1.4;
+      if (enhancer) enhancer.gain.value = 3.5;
+      if (deEsser) deEsser.gain.value = -5;
+      if (stereoPanner) stereoPanner.pan.value = 0;
+      if (softLimiter) {
+        Object.assign(softLimiter, {
+          threshold: { value: -5 },
+          knee: { value: 10 },
+          ratio: { value: 12 },
+          attack: { value: 0.003 },
+          release: { value: 0.2 }
+        });
+      }
+      if (smartLimiter) {
+        smartLimiter.threshold.value = -3;
+        smartLimiter.ratio.value = 15;
+      }
+    }
+  };
+
+  if (logicMap[name]) logicMap[name]();
+}
+
+function applyFullPreset(name, preset) {
+  if (!preset || !eqNodes?.length) return;
+
+  updateSlidersFromPreset(preset);
+
+  if (preset.enhancer !== undefined && gainNode) {
+    gainNode.gain.value = clamp(preset.enhancer, 0.1, 5);
+  }
+
+  if (compressor) applyCompressorSettings(compressor, preset.compressor);
+  applyCustomFilters(preset.filters);
+  applyExtraNodes(preset.extraNodes);
+  applyLogicByName(name);
+
+  if (preset.volumeBoost !== undefined && gainNode) {
+    gainNode.gain.value = clamp(preset.volumeBoost, 0, 2);
+  }
+
+  lastManualPreset = name;
+}
+
+function applyPresetCombined(eqName, volName = "Volume++") {
+  const eqPreset = allPresets[eqName];
+  const volPreset = allPresets[volName];
+  if (!eqPreset) return;
+
+  const fullPreset = { ...eqPreset };
+  if (volPreset && eqName !== "Volume++") {
+    if (volPreset.enhancer !== undefined) fullPreset.enhancer = volPreset.enhancer;
+    if (volPreset.compressor !== undefined) fullPreset.compressor = volPreset.compressor;
+  }
+
+  applyFullPreset(eqName, fullPreset);
+  saveLastPreset(eqName, volName);
+}
+
+function applyPresetSmart(name) {
+  if (!audioCtx || !sourceNode) initAudioContext();
+  const audio = document.getElementById("audioPlayer") || document.getElementById("media");
+  if (audio.paused) pendingEQPreset = name;
+  else applyPresetCombined(name, "Volume++");
+  lastManualPreset = name;
+}
+
+function saveLastPreset(eq, vol) {
+  localStorage.setItem("lastEQ", eq);
+  localStorage.setItem("lastVol", vol);
+}
+
+function loadLastPreset() {
+  return {
+    eq: localStorage.getItem("lastEQ") || "Same Soft",
+    vol: localStorage.getItem("lastVol") || "Volume++"
+  };
+}
+
+function setupAudioPipeline(element, playerId = "default") {
+  initAudioContext();
+
+  if (audioPipelines[playerId]?.source) {
+    try { audioPipelines[playerId].source.disconnect(); } catch (e) {}
+  }
+
+  eqNodes = Bands.map(freq => {
+    const f = audioCtx.createBiquadFilter();
+    f.type = "peaking";
+    f.frequency.value = freq;
+    f.Q.value = 1;
+    f.gain.value = 0;
+    return f;
+  });
+
+  sourceNode = audioCtx.createMediaElementSource(element);
+  sourceNode.connect(eqNodes[0]);
+  for (let i = 0; i < eqNodes.length - 1; i++) eqNodes[i].connect(eqNodes[i + 1]);
+  eqNodes.at(-1).connect(compressor);
+  compressor.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+
+  audioPipelines[playerId] = {
+    source: sourceNode,
+    eq: eqNodes,
+    compressor,
+    gain: gainNode,
+    element
+  };
+
+  const presetName = presetSelect?.value || "Same Soft";
+  if (eqPresets[presetName]) applyFullPreset(presetName, eqPresets[presetName]);
+}
+
+console.log("✅ Audio EQ + Volume++ system ready");
+
+
+
+
+
+
 
   window.addEventListener('DOMContentLoaded', () => {
   const el = document.getElementById("visualMode");
@@ -707,11 +1004,6 @@ const visualEngineSettings = {
 
   animate();
   
-  
-
-
-
-
 
       
 function lockVolumeTo200() {
@@ -738,6 +1030,8 @@ function lockVolumeTo200() {
 }
 
 document.addEventListener("DOMContentLoaded", lockVolumeTo200);
+    
+    
     
     
       if ('serviceWorker' in navigator) {        
