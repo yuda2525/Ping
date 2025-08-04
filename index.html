@@ -711,7 +711,7 @@ function initAudioContext() {
   gainNode = audioCtx.createGain();
   compressorNode = audioCtx.createDynamicsCompressor();
 
-  gainNode.gain.value = 1.5;
+  gainNode.gain.value = 1.3;
 
   sourceNode.connect(gainNode);
   gainNode.connect(compressorNode);
