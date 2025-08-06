@@ -798,6 +798,18 @@ function safeDisconnect(node) {
   try { node?.disconnect(); } catch (e) {}
 }
 
+
+let stereoEnabled = false;
+let panTimer = null;
+let panPos = 0;
+let panDir = 1;
+
+let swingTimer = null;
+let isStereoOn = false;
+let autoPan = false;
+
+let stereoAnalyser;
+
 function applyStereoRoutingAuto() {
   if (!audioCtx) return console.warn("AudioContext belum siap");
   if (!eqNodes?.length) return console.warn("EQ nodes belum siap");
@@ -807,6 +819,8 @@ function applyStereoRoutingAuto() {
   safeDisconnect(stereoGain);
   safeDisconnect(crossfeed);
   safeDisconnect(stereoAnalyser);
+
+  isStereoOn = !isStereoOn;
 
   const finalNode = eqNodes[eqNodes.length - 1];
 
