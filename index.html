@@ -625,7 +625,11 @@ const eqPresets = {
 const volumeBoostPresets = {
   "Volume++": {
     eq: [2, 1.5, 1.2, 0.8, 0, 1, 1.8, 2.2, 2.8, 3.5, 3, 2],
-    enhancer: 1.4,
+  enhancer: {
+    presence: 2,
+    brilliance: 3,
+  warmth: 1.5
+  },
 compressor: {
   threshold: -13.5,
   ratio: 4,
@@ -702,25 +706,77 @@ limiter: {
 const allPresets = { ...eqPresets }; 
 
 // === Inisialisasi audio pipeline sekali saja
-function initAudioContext() {
+let stereoPanner = null;
+let stereoGain = null;
+let crossfeed = null;
+
+let panTimer = null;
+let panPos = 0;
+let panDir = 1;
+let isStereoOn = false;
+
+let stereoEnabled = false;
+let swingTimer = null;
+
+let autoPan = false;
+
+let stereoAnalyser;
+
+let crossfeedSplitter = null;
+let crossfeedMerger = null;
+let crossfeedGainLtoR = null;
+let crossfeedGainRtoL = null;
+
+function initAudioContext(mediaElement) {
   if (isAudioReady) return;
 
   audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  sourceNode = audioCtx.createMediaElementSource(player);
+  sourceNode = audioCtx.createMediaElementSource(mediaElement);
 
   gainNode = audioCtx.createGain();
   compressorNode = audioCtx.createDynamicsCompressor();
 
   gainNode.gain.value = 1.2;
 
+  // Buat node crossfeed stereo
+  crossfeedSplitter = audioCtx.createChannelSplitter(2);
+  crossfeedMerger = audioCtx.createChannelMerger(2);
+  crossfeedGainLtoR = audioCtx.createGain();
+  crossfeedGainRtoL = audioCtx.createGain();
+
+  crossfeedGainLtoR.gain.value = 0.05;
+  crossfeedGainRtoL.gain.value = 0.05;
+
+  // Rangkai chain awal: source → gain → compressor
   sourceNode.connect(gainNode);
   gainNode.connect(compressorNode);
-  compressorNode.connect(audioCtx.destination);
+
+  // Compressor ke splitter crossfeed
+  compressorNode.connect(crossfeedSplitter);
+
+  // Crossfeed routing:
+  // Left channel langsung ke Left output
+  crossfeedSplitter.connect(crossfeedMerger, 0, 0);
+  // Left channel crossfeed ke Right output lewat gain
+  crossfeedSplitter.connect(crossfeedGainLtoR, 0);
+  crossfeedGainLtoR.connect(crossfeedMerger, 0, 1);
+
+  // Right channel langsung ke Right output
+  crossfeedSplitter.connect(crossfeedMerger, 1, 1);
+  // Right channel crossfeed ke Left output lewat gain
+  crossfeedSplitter.connect(crossfeedGainRtoL, 1);
+  crossfeedGainRtoL.connect(crossfeedMerger, 0, 0);
+
+  // Merger ke output
+  crossfeedMerger.connect(audioCtx.destination);
+
+  // Catat nodes penting buat referensi EQ dan lain-lain
+  eqNodes = [sourceNode, gainNode, compressorNode];
 
   isAudioReady = true;
-  console.log("🎧 AudioContext siap");
+  console.log("🎧 AudioContext dengan crossfeed stereo siap");
 
-  // Aktifkan Volume++ langsung
+  // Apply preset volume boost otomatis kalau ada
   const volPreset = volumeBoostPresets["Volume++"];
   if (volPreset) applyPreset(volPreset, "Volume++ (auto)");
 }
@@ -788,85 +844,10 @@ function setupPresetDropdown() {
 
 // 🚀 INIT
 setupPresetDropdown();
-initAudioContext();
-
-player.addEventListener("play", async () => {
-  if (audioCtx.state === "suspended") await audioCtx.resume();
-});
-
-function safeDisconnect(node) {
-  try { node?.disconnect(); } catch (e) {}
-}
+initAudioContext(player);
 
 
-let stereoEnabled = false;
-let panTimer = null;
-let panPos = 0;
-let panDir = 1;
-
-let swingTimer = null;
-let isStereoOn = false;
-let autoPan = false;
-
-let stereoAnalyser;
-
-function applyStereoRoutingAuto() {
-  if (!audioCtx) return console.warn("AudioContext belum siap");
-  if (!eqNodes?.length) return console.warn("EQ nodes belum siap");
-
-  safeDisconnect(eqNodes[eqNodes.length - 1]);
-  safeDisconnect(stereoPanner);
-  safeDisconnect(stereoGain);
-  safeDisconnect(crossfeed);
-  safeDisconnect(stereoAnalyser);
-
-  isStereoOn = !isStereoOn;
-
-  const finalNode = eqNodes[eqNodes.length - 1];
-
-  // Crossfeed selalu aktif
-  crossfeed = audioCtx.createGain();
-  crossfeed.gain.value = 0.05; // sesuaikan kalau perlu
-  finalNode.connect(crossfeed);
-  crossfeed.connect(audioCtx.destination);
-
-  stereoPanner = audioCtx.createStereoPanner();
-  stereoGain = audioCtx.createGain();
-  stereoGain.gain.value = 0.9;
-
-  stereoAnalyser = audioCtx.createAnalyser();
-  stereoAnalyser.fftSize = 256;
-
-  finalNode.connect(stereoPanner);
-  stereoPanner.connect(stereoGain);
-  stereoGain.connect(audioCtx.destination);
-  stereoGain.connect(stereoAnalyser);
-
-  startSlowPan();
-}
-
-function startSlowPan() {
-  stopSlowPan();
-  panPos = 0;
-  panDir = 1;
-
-  panTimer = setInterval(() => {
-    if (!stereoPanner) return;
-    panPos += panDir * 0.002;
-    if (panPos >= 0.8 || panPos <= -0.8) panDir *= -1;
-    stereoPanner.pan.setValueAtTime(panPos, audioCtx.currentTime);
-    drawStereoPanVisual?.();
-  }, 30);
-}
-
-function stopSlowPan() {
-  if (panTimer) {
-    clearInterval(panTimer);
-    panTimer = null;
-  }
-}
-
-    let running = false;
+let running = false;
 let rafId;
 
 function loop60fps() {
