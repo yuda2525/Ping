@@ -512,8 +512,6 @@ html, body {
   }
 
 
-
-
   const player = document.getElementById("mainVideo");
   const eqPresetSelect = document.getElementById("eqPreset");
 
@@ -703,7 +701,9 @@ limiter: {
 };
 
 // === GABUNG SEMUA PRESET
-const allPresets = { ...eqPresets }; 
+const allPresets = {
+...eqPresets,
+};
 
 // === Inisialisasi audio pipeline sekali saja
 let stereoPanner = null;
@@ -727,6 +727,9 @@ let crossfeedMerger = null;
 let crossfeedGainLtoR = null;
 let crossfeedGainRtoL = null;
 
+let gainBoostNode;
+
+// === Init AudioContext & pipeline
 function initAudioContext(mediaElement) {
   if (isAudioReady) return;
 
@@ -734,51 +737,43 @@ function initAudioContext(mediaElement) {
   sourceNode = audioCtx.createMediaElementSource(mediaElement);
 
   gainNode = audioCtx.createGain();
+  gainBoostNode = audioCtx.createGain();
   compressorNode = audioCtx.createDynamicsCompressor();
 
-  gainNode.gain.value = 1.2;
+  // Atur gain default
+  gainNode.gain.value = 1.0;
+  gainBoostNode.gain.value = 1.2;
 
-  // Buat node crossfeed stereo
-  crossfeedSplitter = audioCtx.createChannelSplitter(2);
-  crossfeedMerger = audioCtx.createChannelMerger(2);
-  crossfeedGainLtoR = audioCtx.createGain();
-  crossfeedGainRtoL = audioCtx.createGain();
+  // Crossfeed stereo setup
+crossfeedSplitter = audioCtx.createChannelSplitter(2);
+crossfeedMerger = audioCtx.createChannelMerger(2);
+crossfeedGainLtoR = audioCtx.createGain();
+crossfeedGainRtoL = audioCtx.createGain();
 
   crossfeedGainLtoR.gain.value = 0.05;
   crossfeedGainRtoL.gain.value = 0.05;
 
-  // Rangkai chain awal: source → gain → compressor
+  // Chain source → gain → compressor → gainBoost → crossfeedSplitter
   sourceNode.connect(gainNode);
   gainNode.connect(compressorNode);
+  compressorNode.connect(gainBoostNode);
+  gainBoostNode.connect(crossfeedSplitter);
 
-  // Compressor ke splitter crossfeed
-  compressorNode.connect(crossfeedSplitter);
-
-  // Crossfeed routing:
-  // Left channel langsung ke Left output
-  crossfeedSplitter.connect(crossfeedMerger, 0, 0);
-  // Left channel crossfeed ke Right output lewat gain
+  // Crossfeed routing
+  crossfeedSplitter.connect(crossfeedMerger, 0, 0); // Left direct
   crossfeedSplitter.connect(crossfeedGainLtoR, 0);
-  crossfeedGainLtoR.connect(crossfeedMerger, 0, 1);
+  crossfeedGainLtoR.connect(crossfeedMerger, 0, 1); // Left to right crossfeed
 
-  // Right channel langsung ke Right output
-  crossfeedSplitter.connect(crossfeedMerger, 1, 1);
-  // Right channel crossfeed ke Left output lewat gain
+  crossfeedSplitter.connect(crossfeedMerger, 1, 1); // Right direct
   crossfeedSplitter.connect(crossfeedGainRtoL, 1);
-  crossfeedGainRtoL.connect(crossfeedMerger, 0, 0);
+  crossfeedGainRtoL.connect(crossfeedMerger, 0, 0); // Right to left crossfeed
 
-  // Merger ke output
   crossfeedMerger.connect(audioCtx.destination);
 
-  // Catat nodes penting buat referensi EQ dan lain-lain
-  eqNodes = [sourceNode, gainNode, compressorNode];
-
   isAudioReady = true;
-  console.log("🎧 AudioContext dengan crossfeed stereo siap");
+  console.log("🎧 AudioContext siap dengan crossfeed dan volume boost");
 
-  // Apply preset volume boost otomatis kalau ada
-  const volPreset = volumeBoostPresets["Volume++"];
-  if (volPreset) applyPreset(volPreset, "Volume++ (auto)");
+  applyPreset(volumeBoostPresets["Volume++"], "Volume++ (auto)");
 }
 
 function applyPreset(preset, name) {
@@ -819,6 +814,43 @@ function applyPreset(preset, name) {
 
   console.log(`✅ Preset aktif: ${name}`);
 }
+
+// Gabungkan semua preset EQ dengan Volume++ jadi satu objek baru
+function applyPresetCombined(eqName) {
+  if (!eqName) {
+    console.warn("❌ EQ preset kosong, dibatalkan");
+    return;
+  }
+
+  const eqPreset = allPresets[eqName];
+
+  if (!eqPreset) {
+    console.warn(`❌ EQ preset '${eqName}' tidak ditemukan`);
+    return;
+  }
+
+  console.log(`🎛️ Applying EQ preset '${eqName}' + Volume++ tweak`);
+
+  applyPreset(eqPreset, `${eqName} + Volume++`);
+  
+  lastEQPreset = eqName;
+  lastVolPreset = "Volume++";
+
+  saveLastPreset(eqName, "Volume++");
+}
+  
+function saveLastPreset(eq, vol) {
+  localStorage.setItem("lastEQ", eq);
+  localStorage.setItem("lastVol", vol);
+}
+
+function loadLastPreset() {
+  return {
+    eq: localStorage.getItem("lastEQ") || "SameSoft",
+    vol: localStorage.getItem("lastVol") || "Volume++"
+  };
+}
+
 
 let isDropdownReady = false;
 
