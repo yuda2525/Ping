@@ -323,6 +323,30 @@ html, body {
   background: radial-gradient(circle at center, #111 10%, #000 100%);
 }
 
+#visualPresetDropdown {
+  padding: 8px 12px;
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  backdrop-filter: blur(5px);
+  appearance: none; /* hapus default arrow */
+  -webkit-appearance: none;
+  outline: none;
+  cursor: pointer;
+}
+
+/* optional: panah custom */
+#visualPresetDropdown::after {
+  content: '▼';
+  position: absolute;
+  right: 12px;
+  pointer-events: none;
+  color: #fff;
+}
+
   </style>    
 </head>      
 	<body onclick="enterFullscreenOnce()">      
@@ -350,6 +374,44 @@ html, body {
   <option value="Orchestra Film Score">Orchestra Film Score</option>
         <option value="Surround Feel">Surround Feel</option>
 </select>
+
+<!-- Dropdown -->
+<div style="position: absolute; top: 10px; right: 10px; z-index: 10;">
+  <select id="visualPresetDropdown">
+  	  <option value="Off">Off</option>
+  <option value="Cinematic">Cinematic</option>
+  <option value="Horror">Horror</option>
+  <option value="Dreamy">Dreamy</option>
+  <option value="HighContrast">HighContrast</option>
+  <option value="Noir">Noir</option>
+  <option value="SoftFocus">SoftFocus</option>
+  <option value="Sepia">Sepia</option>
+  <option value="Vintage">Vintage</option>
+  <option value="Fantasy">Fantasy</option>
+  <option value="Moody">Moody</option>
+  <option value="FantasyGlow">Fantasy Glow</option>
+  <option value="Pastel">Pastel</option>
+  <option value="WarmTone">Warm Tone</option>
+  <option value="ColdTone">Cold Tone</option>
+  <option value="UltraSaturated">Ultra Saturated</option>
+  <option value="FilmGrain">Film Grain</option>
+  <option value="HDRPop">HDR Pop</option>
+  <option value="Winter">Winter</option>
+  <option value="Neon">Neon</option>
+  <option value="Retro">Retro</option>
+  <option value="Cyberpunk">Cyberpunk</option>
+  <option value="Bleach Bypass">Bleach Bypass</option>
+  <option value="Sunset">Sunset</option>
+    <option value="Sunrise">Sunrise</option>
+  <option value="Twilight">Twilight</option>
+    <option value="Low Saturation">Low Saturation</option>
+  <option value="Black & White">Black & White</option>
+    <option value="Lomo">Lomo</option>
+  <option value="Glow Bloom">Glow Bloom</option>
+  <option value="Cartoon">Cartoon</option>
+    <option value="ColorPop">Color Pop</option>
+</select>
+</div>
     
     <div class="retina-glass">
 	<div id="visualMode" class="content-overlay visual-mode-all">
@@ -374,6 +436,183 @@ html, body {
 
   let hasEnteredFullscreen = false;
   let isDragging = false, offsetX = 0, offsetY = 0;
+  
+// ==================== Visual Presets ====================
+const visualPresets = {
+  "Cinematic":      { contrast: 1.2, brightness: 1.05, saturation: 1.1, hue: 0, gamma: 1.0, bloom: 0.3, vignette: 0.2 },
+  "Horror":         { contrast: 1.4, brightness: 0.8,  saturation: 0.6, hue: -20, gamma: 1.2, bloom: 0.1, vignette: 0.5 },
+  "Dreamy":         { contrast: 1.0, brightness: 1.2, saturation: 1.05,hue: 270, gamma: 0.95,bloom: 0.4, vignette: 0.1 },
+  "HighContrast":   { contrast: 1.5, brightness: 1.0, saturation: 1.2, hue: 0,   gamma: 1.0, bloom: 0.2, vignette: 0.3 },
+  "Noir":           { contrast: 1.3, brightness: 0.7, saturation: 0.0, hue: 0,   gamma: 1.1, bloom: 0.1, vignette: 0.6 },
+  "SoftFocus":      { contrast: 1.0, brightness: 1.1, saturation: 0.9, hue: 0,    gamma: 0.95,bloom: 0.5, vignette: 0.1 },
+  "Sepia":          { contrast: 1.1, brightness: 1.05,saturation: 0.9, hue: 30,  gamma: 1.0, bloom: 0.2, vignette: 0.2 },
+  "Vintage":        { contrast: 1.0, brightness: 1.0, saturation: 0.8, hue: -10, gamma: 1.0, bloom: 0.3, vignette: 0.25 },
+  "Fantasy":        { contrast: 1.2, brightness: 1.15,saturation: 1.3, hue: 200, gamma: 1.0, bloom: 0.5, vignette: 0.1 },
+  "Moody":          { contrast: 1.3, brightness: 0.9, saturation: 1.0, hue: 220, gamma: 1.05,bloom: 0.25,vignette:0.3 },
+  "FantasyGlow":    { contrast: 1.1, brightness: 1.2, saturation: 1.4, hue: 270, gamma: 0.95,bloom: 0.6, vignette:0.1 },
+  "Pastel":         { contrast: 0.9, brightness: 1.2, saturation: 0.8, hue: 300, gamma: 1.0, bloom: 0.3, vignette:0.1 },
+  "WarmTone":       { contrast: 1.1, brightness: 1.1, saturation: 1.1, hue: 30,  gamma: 1.0, bloom:0.2, vignette:0.15 },
+  "ColdTone":       { contrast: 1.1, brightness: 1.0, saturation: 1.0, hue: 200, gamma: 1.0,bloom:0.2, vignette:0.15 },
+  "UltraSaturated": { contrast: 1.3, brightness: 1.05,saturation:1.5, hue: 0,    gamma: 1.0, bloom:0.3, vignette:0.1 },
+  "FilmGrain":      { contrast: 1.0, brightness: 1.0, saturation:1.0, hue:0,      gamma: 1.0, bloom:0.1, vignette:0.2 },
+  "HDRPop":         { contrast: 1.4, brightness: 1.1, saturation:1.2, hue:10,    gamma: 1.0, bloom:0.35,vignette:0.1 },
+    "Winter": {
+    contrast: 1.1,
+    brightness: 1.1,
+    saturation: 0.9,
+    hue: 180,
+    gamma: 1.0,
+    bloom: 0.2,
+    vignette: 0.1
+  },
+  "Neon": {
+    contrast: 1.3,
+    brightness: 1.0,
+    saturation: 1.5,
+    hue: 300,
+    gamma: 1.0,
+    bloom: 0.35,
+    vignette: 0.15
+  },
+  "Retro": {
+    contrast: 1.0,
+    brightness: 1.05,
+    saturation: 0.8,
+    hue: 30,
+    gamma: 1.0,
+    bloom: 0.25,
+    vignette: 0.2
+  },
+  "Cyberpunk": {
+    contrast: 1.25,
+    brightness: 1.0,
+    saturation: 1.6,
+    hue: 270,
+    gamma: 1.0,
+    bloom: 0.4,
+    vignette: 0.15
+  },
+  "Bleach Bypass": {
+    contrast: 1.5,
+    brightness: 1.05,
+    saturation: 0.3,
+    hue: 0,
+    gamma: 1.0,
+    bloom: 0.1,
+    vignette: 0.3
+  },
+  "Sunset": {
+    contrast: 1.2,
+    brightness: 1.05,
+    saturation: 1.3,
+    hue: 25,
+    gamma: 1.0,
+    bloom: 0.3,
+    vignette: 0.2
+  },
+  "Sunrise": {
+    contrast: 1.15,
+    brightness: 1.1,
+    saturation: 1.25,
+    hue: 15,
+    gamma: 1.0,
+    bloom: 0.3,
+    vignette: 0.15
+  },
+  "Twilight": {
+    contrast: 1.2,
+    brightness: 0.95,
+    saturation: 1.1,
+    hue: 230,
+    gamma: 1.0,
+    bloom: 0.25,
+    vignette: 0.2
+  },
+    "Low Saturation": {
+    contrast: 1.1,
+    brightness: 1.0,
+    saturation: 0.5, // rendah
+    hue: 0,
+    gamma: 1.0,
+    bloom: 0.1,
+    vignette: 0.15
+  },
+  "Black & White": {
+    contrast: 1.2,
+    brightness: 1.0,
+    saturation: 0.0, // full B&W
+    hue: 0,
+    gamma: 1.0,
+    bloom: 0.1,
+    vignette: 0.25
+  },
+  "Lomo": {
+    contrast: 1.4,
+    brightness: 1.05,
+    saturation: 1.2,
+    hue: 0,
+    gamma: 1.0,
+    bloom: 0.15,
+    vignette: 0.4
+  },
+  "Glow Bloom": {
+    contrast: 1.15,
+    brightness: 1.1,
+    saturation: 1.3,
+    hue: 0,
+    gamma: 1.0,
+    bloom: 0.6, // kuat
+    vignette: 0.1
+  },
+  "Cartoon": {
+  contrast: 1.4,
+  brightness: 1.1,
+  saturation: 1.6,
+  hue: 20,
+  gamma: 1.0,
+  bloom: 0.2,
+  vignette: 0.05
+  },
+  "ColorPop":       { contrast: 1.2, brightness: 1.0, saturation:1.5, hue:0,      gamma: 1.0, bloom:0.4, vignette:0.1 }
+};
+
+// ==================== Apply Preset ====================
+function applyVisualPreset(presetName) {
+  const video = document.getElementById("mainVideo");
+
+  if (presetName === "Off") {
+    // mode Off → matikan semua efek
+    video.style.filter = "none";
+
+    // jika pakai WebGL / canvas shader
+    // videoCanvas.renderBloom(0);
+    // videoCanvas.renderVignette(0);
+    return;
+  }
+
+  // apply preset lain
+  const p = visualPresets[presetName];
+  if (!p) return;
+
+  video.style.filter = `
+    contrast(${p.contrast})
+    brightness(${p.brightness})
+    saturate(${p.saturation})
+    hue-rotate(${p.hue}deg)
+  `;
+
+  // WebGL / shader opsional
+  // videoCanvas.renderBloom(p.bloom);
+  // videoCanvas.renderVignette(p.vignette);
+}
+
+// ==================== Dropdown Listener ====================
+const presetDropdown = document.getElementById("visualPresetDropdown");
+presetDropdown.addEventListener("change", e => {
+  applyVisualPreset(e.target.value);
+});
+
+
 
   // ========== Buka File ==========
   openButton.onclick = () => fileInput.click();
